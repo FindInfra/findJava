@@ -1,8 +1,8 @@
 body {
     display: grid;
     min-height: 100vh;
-    background-color: #FFE6CC;
-    background-image: linear-gradient(to bottom, #FFE6CC, #FFF);
+    background-color: SkyBlue;
+    background-image: linear-gradient(to bottom, SkyBlue, #FFF);
     text-align: center;
     font-family: Verdana;
     font-size: 1.5em;
@@ -22,7 +22,7 @@ body {
 
 @media only screen and (min-device-width: 601px) {
     body {
-        background-image: linear-gradient(to right, #FFE6CC, #FFF);
+        background-image: linear-gradient(to right, SkyBlue, #FFF);
         text-align: left;
     }
 
