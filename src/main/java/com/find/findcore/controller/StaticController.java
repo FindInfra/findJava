@@ -15,8 +15,8 @@ import java.util.List;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/static")
-public class staticController {
-    private static final Logger log = LoggerFactory.getLogger(staticController.class);
+public class StaticController {
+    private static final Logger log = LoggerFactory.getLogger(StaticController.class);
 
     @GetMapping({"/home"})
     public String getHealth() {

@@ -14,8 +14,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.find.findcore.security.jwt.AgentAuthTokenFilter;
 import com.find.findcore.security.jwt.AuthEntryPointJwt;
 import com.find.findcore.security.jwt.AuthTokenFilter;
+import com.find.findcore.service.impl.AgentServiceImpl;
 import com.find.findcore.service.impl.UserDetailsServiceImpl;
 
 @Configuration
@@ -29,6 +31,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	UserDetailsServiceImpl userDetailsService;
 
 	@Autowired
+	AgentServiceImpl agentServiceImpl;
+
+	@Autowired
 	private AuthEntryPointJwt unauthorizedHandler;
 
 	@Bean
@@ -36,9 +41,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		return new AuthTokenFilter();
 	}
 
+	@Bean
+	public AgentAuthTokenFilter agentAuthenticationJwtTokenFilter() {
+		return new AgentAuthTokenFilter();
+	}
+
 	@Override
 	public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-		authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+//		authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+		authenticationManagerBuilder.userDetailsService(agentServiceImpl).passwordEncoder(passwordEncoder());
 	}
 
 	@Bean
@@ -56,11 +67,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.cors().and().csrf().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
-				.antMatchers("/api/auth/**").permitAll()
+				.antMatchers("/api/auth/**", "/api/find/**").permitAll()
 				.antMatchers("/", "/api/test/**", "/static/**", "/h2-console/**").permitAll().anyRequest()
 				.authenticated();
 		http.headers().frameOptions().disable();
 
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(agentAuthenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
 }

@@ -1,0 +1,37 @@
+body {
+    display: grid;
+    min-height: 100vh;
+    background-color: #FFE6CC;
+    background-image: linear-gradient(to bottom, #FFE6CC, #FFF);
+    text-align: center;
+    font-family: Verdana;
+    font-size: 1.5em;
+}
+
+.outer-div {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.inner-div {
+    padding: 0 2em;
+}
+
+@media only screen and (min-device-width: 601px) {
+    body {
+        background-image: linear-gradient(to right, #FFE6CC, #FFF);
+        text-align: left;
+    }
+
+    .outer-div {
+        flex-direction: row;
+    }
+
+    .inner-div {
+        width: 50%;
+        padding: 0;
+    }
+}

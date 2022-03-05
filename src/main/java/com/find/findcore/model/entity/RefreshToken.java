@@ -18,6 +18,10 @@ public class RefreshToken {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    @OneToOne
+    @JoinColumn(name = "agent_id", referencedColumnName = "id")
+    private Agent agent;
+
     @Column(nullable = false, unique = true)
     private String token;
 
