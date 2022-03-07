@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import com.find.findcore.service.impl.AgentAuthDetailsImpl;
 import com.find.findcore.service.impl.UserDetailsImpl;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -36,6 +37,15 @@ public class JwtUtils {
 		 * .setIssuedAt(new Date()) .setExpiration(new Date(System.currentTimeMillis() +
 		 * jwtExpirationMs)) .signWith(SignatureAlgorithm.HS512, jwtSecret) .compact();
 		 */
+	}
+	
+	public String generateJwtTokenForAgent(Authentication authentication) {
+
+		AgentAuthDetailsImpl agentAuthDetailsImpl = (AgentAuthDetailsImpl) authentication.getPrincipal();
+
+		return Jwts.builder().setSubject((agentAuthDetailsImpl.getMobileno())).setIssuedAt(new Date())
+				.setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+				.signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
 	}
 
 	public String getUserNameFromJwtToken(String token) {

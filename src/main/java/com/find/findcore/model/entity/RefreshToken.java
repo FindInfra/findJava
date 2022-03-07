@@ -60,5 +60,10 @@ public class RefreshToken {
 
 	public RefreshToken() {
 	}
+    @OneToOne
+    @JoinColumn(name = "agent_id", referencedColumnName = "id")
+    private Agent agent;
 
+    @Column(nullable = false, unique = true)
+    private String token;
 }

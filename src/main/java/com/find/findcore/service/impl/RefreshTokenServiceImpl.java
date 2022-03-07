@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.find.findcore.exception.RefreshTokenException;
 import com.find.findcore.model.entity.RefreshToken;
+import com.find.findcore.repository.AgentRepository;
 import com.find.findcore.repository.RefreshTokenRepository;
 import com.find.findcore.repository.UserRepository;
 
@@ -24,6 +25,9 @@ public class RefreshTokenServiceImpl {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private AgentRepository agentRepository;
 
 	public Optional<RefreshToken> findByToken(String token) {
 		return refreshTokenRepository.findByToken(token);
@@ -33,6 +37,17 @@ public class RefreshTokenServiceImpl {
 		RefreshToken refreshToken = new RefreshToken();
 
 		refreshToken.setUser(userRepository.findById(userId).get());
+		refreshToken.setExpiryDate(Instant.now().plusMillis(jwtRefreshExpirationMs));
+		refreshToken.setToken(UUID.randomUUID().toString());
+
+		refreshToken = refreshTokenRepository.save(refreshToken);
+		return refreshToken;
+	}
+	
+	public RefreshToken createRefreshTokenForAgent(Long agentId) {
+		RefreshToken refreshToken = new RefreshToken();
+
+		refreshToken.setAgent(agentRepository.findById(agentId).get());
 		refreshToken.setExpiryDate(Instant.now().plusMillis(jwtRefreshExpirationMs));
 		refreshToken.setToken(UUID.randomUUID().toString());
 
@@ -52,5 +67,10 @@ public class RefreshTokenServiceImpl {
 	@Transactional
 	public int deleteByUserId(Long userId) {
 		return refreshTokenRepository.deleteByUser(userRepository.findById(userId).get());
+	}
+	
+	@Transactional
+	public int deleteByAgentId(Long agentId) {
+		return refreshTokenRepository.deleteByAgent(agentRepository.findById(agentId).get());
 	}
 }
