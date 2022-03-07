@@ -20,11 +20,18 @@ public class RefreshToken {
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	private User user;
 
+	@OneToOne
+	@JoinColumn(name = "agent_id", referencedColumnName = "id")
+	private Agent agent;
+
 	@Column(nullable = false, unique = true)
 	private String token;
 
 	@Column(nullable = false)
 	private Instant expiryDate;
+
+	public RefreshToken() {
+	}
 
 	public long getId() {
 		return id;
@@ -58,12 +65,12 @@ public class RefreshToken {
 		this.expiryDate = expiryDate;
 	}
 
-	public RefreshToken() {
+	public Agent getAgent() {
+		return agent;
 	}
-    @OneToOne
-    @JoinColumn(name = "agent_id", referencedColumnName = "id")
-    private Agent agent;
 
-    @Column(nullable = false, unique = true)
-    private String token;
+	public void setAgent(Agent agent) {
+		this.agent = agent;
+	}
+
 }
