@@ -41,6 +41,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		return new AuthTokenFilter();
 	}
 
+	String[] whitelistResources = new String[] { "/", "/login", "/api/auth/**", "/resources/**", "/static/**",
+			"/templates/**", "/api/**", "/css/**", "/js/**", "/h2-console/**" };
 	@Bean
 	public AgentAuthTokenFilter agentAuthenticationJwtTokenFilter() {
 		return new AgentAuthTokenFilter();
@@ -65,8 +67,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		/*
+		 * http.cors().and().csrf().disable().exceptionHandling().
+		 * authenticationEntryPoint(unauthorizedHandler).and()
+		 * .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).
+		 * and().authorizeRequests() .antMatchers("/api/auth/**").permitAll()
+		 * .antMatchers("/", "/api/test/**", "/static/**",
+		 * "/h2-console/**").permitAll().anyRequest() .authenticated();
+		 * http.headers().frameOptions().disable();
+		 */
 		http.cors().and().csrf().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
+				.antMatchers(whitelistResources).permitAll().antMatchers("/api/find/**", "/api/test/**").permitAll()
+				.anyRequest().authenticated();
 				.antMatchers("/api/auth/**", "/api/find/**").permitAll()
 				.antMatchers("/", "/api/test/**", "/static/**", "/h2-console/**").permitAll().anyRequest()
 				.authenticated();
