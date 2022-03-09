@@ -29,6 +29,7 @@ import com.find.findcore.service.AgencyService;
 import com.find.findcore.service.AgentService;
 import com.find.findcore.service.impl.AgentAuthDetailsImpl;
 import com.find.findcore.service.impl.RefreshTokenServiceImpl;
+import java.util.Collections;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -57,21 +58,9 @@ public class AgentController {
 	@PostMapping({ "/agent-signup" })
 	public ResponseEntity<?> registerUser(@Valid @RequestBody Agent agentReq) {
 		try {
-//			log.info(agentReq.toString());
-//			log.info(agentService + "");
-//
-//			if (agentService.agentExists(agentReq.getMobileno())) {
-//				return ResponseEntity.badRequest().body(new MessageResponse("Error: Mobile no. is already taken!"));
-//			}
-
-			// Optional<Agency> agency =
-			// agencyService.getAgencyById(agentReq.getAgency().getId().longValue()).get();
-			// Agency agency = new Agency();
-			// agency.setId(1L);
-
-			// Agent agent = new Agent(agentReq.getFullname(), agentReq.getMobileno(),
-			// agency,
-			// agentReq.getLicenseno(), encoder.encode(agentReq.getPassword()));
+			if (agentService.agentExists(agentReq.getMobileno())) {
+				return ResponseEntity.badRequest().body(new MessageResponse("Error: Mobile no. is already taken!"));
+			}
 
 			agentReq.setPassword(encoder.encode(agentReq.getPassword()));
 			Agent savedAgent = agentService.agentSignUp(agentReq);
@@ -93,8 +82,7 @@ public class AgentController {
 			Authentication authentication = authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(agentReq.getMobileno(), agentReq.getPassword()));
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-			 AgentAuthDetailsImpl authDetailsImpl = (AgentAuthDetailsImpl)
-			 authentication.getPrincipal();
+			AgentAuthDetailsImpl authDetailsImpl = (AgentAuthDetailsImpl) authentication.getPrincipal();
 			String jwt = jwtUtils.generateJwtTokenForAgent(authentication);
 //		List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
 //				.collect(Collectors.toList());
@@ -108,23 +96,27 @@ public class AgentController {
 		}
 	}
 
-	/*
-	 * @PostMapping({ "/signIn" }) public ResponseEntity<MessageResponse>
-	 * agentSignUpIn(@RequestBody Agent agent) { try { if
-	 * (!agentService.agentExists(agent.getMobileno())) { return
-	 * ResponseEntity.badRequest() .body(new
-	 * MessageResponse("Error: User not available. Please signup.")); }
-	 * agentService.agentSignUpIn(agent); } catch (Exception e) {
-	 * log.error(e.getMessage()); } return null; }
-	 */
 	@PostMapping({ "/agent-verify" })
-	public ResponseEntity<MessageResponse> agentVerify() {
+	public ResponseEntity<?> agentVerify(@RequestBody Agent agentReq) {
 		try {
-			agentService.agentVerify();
+			if (!agentService.agentExists(agentReq.getMobileno())) {
+				return ResponseEntity.badRequest()
+						.body(new MessageResponse("Error: User not available. Please signup."));
+			} else {
+				Authentication authentication = authenticationManager.authenticate(
+						new UsernamePasswordAuthenticationToken(agentReq.getMobileno(), agentReq.getPassword()));
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+				AgentAuthDetailsImpl authDetailsImpl = (AgentAuthDetailsImpl) authentication.getPrincipal();
+				String jwt = jwtUtils.generateJwtTokenForAgent(authentication);
+				
+				Agent approvedAgent = agentService.agentVerify(agentReq);
+				return ResponseEntity.ok(new JwtResponse(jwt, approvedAgent.getId(), approvedAgent.getMobileno()));
+			}
 		} catch (Exception e) {
 			log.error(e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+					new MessageResponse("Error: Error occurred during verification. Please try again! " + e.getMessage()));
 		}
-		return null;
 	}
 
 	@GetMapping({ "/agents" })
@@ -135,6 +127,6 @@ public class AgentController {
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
-		return null;
+		return Collections.emptyList();
 	};
 }

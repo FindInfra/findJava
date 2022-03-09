@@ -10,9 +10,9 @@ public interface AgentService {
 
 	void agentSignUpIn(Agent agent);
 
-	void agentVerify();
+	Agent agentVerify(Agent agent);
 
-	Boolean agentExists(String mobileno);
+	boolean agentExists(String mobileno);
 
 	List<Agent> getAllAgents();
 

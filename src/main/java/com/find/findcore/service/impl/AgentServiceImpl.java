@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.find.findcore.controller.AgentController;
 import com.find.findcore.model.entity.Agent;
 import com.find.findcore.repository.AgentRepository;
 import com.find.findcore.service.AgentService;
@@ -33,12 +32,12 @@ public class AgentServiceImpl implements AgentService, UserDetailsService {
 	}
 
 	@Override
-	public void agentVerify() {
-
+	public Agent agentVerify(Agent agent) {
+		return agentRepository.save(agent);
 	}
 
 	@Override
-	public Boolean agentExists(String mobileno) {
+	public boolean agentExists(String mobileno) {
 		return agentRepository.existsByMobileno(mobileno);
 	}
 
