@@ -103,13 +103,14 @@ public class AgentController {
 				return ResponseEntity.badRequest()
 						.body(new MessageResponse("Error: User not available. Please signup."));
 			} else {
+				Agent approvedAgent = agentService.agentVerify(agentReq);
+
 				Authentication authentication = authenticationManager.authenticate(
 						new UsernamePasswordAuthenticationToken(agentReq.getMobileno(), agentReq.getPassword()));
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 				AgentAuthDetailsImpl authDetailsImpl = (AgentAuthDetailsImpl) authentication.getPrincipal();
 				String jwt = jwtUtils.generateJwtTokenForAgent(authentication);
 				
-				Agent approvedAgent = agentService.agentVerify(agentReq);
 				return ResponseEntity.ok(new JwtResponse(jwt, approvedAgent.getId(), approvedAgent.getMobileno()));
 			}
 		} catch (Exception e) {

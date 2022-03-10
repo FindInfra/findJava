@@ -33,6 +33,8 @@ public class AgentServiceImpl implements AgentService, UserDetailsService {
 
 	@Override
 	public Agent agentVerify(Agent agent) {
+		agent = agentRepository.findByMobileno(agent.getMobileno());
+		agent.setEnabled(true);
 		return agentRepository.save(agent);
 	}
 
