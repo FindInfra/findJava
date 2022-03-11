@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.find.findcore.model.entity.Agency;
+import com.find.findcore.model.payload.response.Response;
 import com.find.findcore.service.AgencyService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -24,26 +26,35 @@ public class AgencyController {
 
 	@Autowired
 	AgencyService agencyService;
-	
-	@PostMapping({"/add-agencies"})
-	public Agency addAgency(@RequestBody Agency agency){
-		
+
+	@PostMapping({ "/add-agency" })
+	public Response addAgency(@RequestBody Agency agency) {
+		Response response = new Response();
+
 		try {
-			return agencyService.saveAgency(agency);
+			response.markSuccessful("Agency Added.");
+			response.setData(agencyService.saveAgency(agency));
+			return response;
 		} catch (Exception e) {
 			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return response;
 		}
-		return null;
 	};
-	
-	@GetMapping({"/agencies"})
-	public List<Agency> getAllAgencies(){
-		
+
+	@GetMapping({ "/agencies" })
+	public Response getAllAgencies() {
+		Response response = new Response();
+
 		try {
-			return agencyService.getAllAgencies();
+			response.markSuccessful("Agency Fetched.");
+			response.setData(agencyService.getAllAgencies());
+			return response;
+
 		} catch (Exception e) {
 			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return response;
 		}
-		return null;
 	};
 }
