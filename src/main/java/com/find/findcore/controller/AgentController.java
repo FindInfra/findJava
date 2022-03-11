@@ -1,7 +1,5 @@
 package com.find.findcore.controller;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -24,12 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.find.findcore.model.entity.Agent;
 import com.find.findcore.model.payload.response.JwtResponse;
 import com.find.findcore.model.payload.response.MessageResponse;
+import com.find.findcore.model.payload.response.Response;
 import com.find.findcore.security.jwt.JwtUtils;
 import com.find.findcore.service.AgencyService;
 import com.find.findcore.service.AgentService;
 import com.find.findcore.service.impl.AgentAuthDetailsImpl;
 import com.find.findcore.service.impl.RefreshTokenServiceImpl;
-import java.util.Collections;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -56,78 +54,98 @@ public class AgentController {
 	JwtUtils jwtUtils;
 
 	@PostMapping({ "/agent-signup" })
-	public ResponseEntity<?> registerUser(@Valid @RequestBody Agent agentReq) {
+	public Response registerUser(@Valid @RequestBody Agent agentReq) {
+		Response response = new Response();
 		try {
 			if (agentService.agentExists(agentReq.getMobileno())) {
-				return ResponseEntity.badRequest().body(new MessageResponse("Error: Mobile no. is already taken!"));
+				response.markFailed(HttpStatus.BAD_REQUEST, "Error: Mobile no. is already taken!");
+				return response;
 			}
 
 			agentReq.setPassword(encoder.encode(agentReq.getPassword()));
 			Agent savedAgent = agentService.agentSignUp(agentReq);
 			if (savedAgent != null) {
-				return ResponseEntity.ok(new MessageResponse("Signup successfully!"));
+				response.markSuccessful("Signup successfully!");
+				return response;
+			} else {
+				response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, "Signup Failed");
+				return response;
 			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-					new MessageResponse("Error: Error occurred during signup. Please try again! " + ex.getMessage()));
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error: Error occurred during signup. Please try again!");
+			return response;
 		}
-		return ResponseEntity.ok(
-				new MessageResponse("User registered successfully!. Please check your email to verify your account."));
 	}
 
 	@PostMapping({ "/agent-signin" })
-	public ResponseEntity<?> authenticateUser(@Valid @RequestBody Agent agentReq) {
+	public Response authenticateUser(@Valid @RequestBody Agent agentReq) {
+		Response response = new Response();
 		try {
 			Authentication authentication = authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(agentReq.getMobileno(), agentReq.getPassword()));
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-			AgentAuthDetailsImpl authDetailsImpl = (AgentAuthDetailsImpl) authentication.getPrincipal();
+			AgentAuthDetailsImpl authDetails = (AgentAuthDetailsImpl) authentication.getPrincipal();
 			String jwt = jwtUtils.generateJwtTokenForAgent(authentication);
-//		List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
-//				.collect(Collectors.toList());
-//		RefreshToken refreshToken = refreshTokenService.createRefreshToken(agentReq.getId());
-			return ResponseEntity.ok(new JwtResponse(jwt, agentReq.getId(), agentReq.getMobileno()));
+			// RefreshToken refreshToken =
+			// refreshTokenService.createRefreshToken(agentReq.getId());
+			response.setJwt(jwt);
+			response.setData(authDetails);
+			response.markSuccessful("Agent Verified!");
+			return response;
 
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-					new MessageResponse("Error: Error occurred during signin. Please try again! " + ex.getMessage()));
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error: Error occurred during signin. Please try again!");
+			return response;
 		}
 	}
 
 	@PostMapping({ "/agent-verify" })
-	public ResponseEntity<?> agentVerify(@RequestBody Agent agentReq) {
+	public Response agentVerify(@RequestBody Agent agentReq) {
+		Response response = new Response();
+
 		try {
 			if (!agentService.agentExists(agentReq.getMobileno())) {
-				return ResponseEntity.badRequest()
-						.body(new MessageResponse("Error: User not available. Please signup."));
+				response.markFailed(HttpStatus.BAD_REQUEST, "Error: User not available. Please signup.");
+				return response;
 			} else {
 				Agent approvedAgent = agentService.agentVerify(agentReq);
 
-				Authentication authentication = authenticationManager.authenticate(
-						new UsernamePasswordAuthenticationToken(agentReq.getMobileno(), agentReq.getPassword()));
+				Authentication authentication = authenticationManager
+						.authenticate(new UsernamePasswordAuthenticationToken(approvedAgent.getMobileno(),
+								approvedAgent.getPassword()));
 				SecurityContextHolder.getContext().setAuthentication(authentication);
-				AgentAuthDetailsImpl authDetailsImpl = (AgentAuthDetailsImpl) authentication.getPrincipal();
+				AgentAuthDetailsImpl authDetails = (AgentAuthDetailsImpl) authentication.getPrincipal();
 				String jwt = jwtUtils.generateJwtTokenForAgent(authentication);
-				
-				return ResponseEntity.ok(new JwtResponse(jwt, approvedAgent.getId(), approvedAgent.getMobileno()));
+
+				response.setJwt(jwt);
+				response.setData(authDetails);
+				response.markSuccessful("Agent Verified!");
+				return response;
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-					new MessageResponse("Error: Error occurred during verification. Please try again! " + e.getMessage()));
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error: Error occurred during verification. Please try again!");
+			return response;
 		}
 	}
 
 	@GetMapping({ "/agents" })
-	public List<Agent> getAllAgents() {
-
+	public Response getAllAgents() {
+		Response response = new Response();
 		try {
-			return agentService.getAllAgents();
+			response.markSuccessful("Agency Fetched.");
+			response.setData(agentService.getAllAgents());
+			return response;
 		} catch (Exception e) {
 			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return response;
 		}
-		return Collections.emptyList();
-	};
+	}
+
 }
