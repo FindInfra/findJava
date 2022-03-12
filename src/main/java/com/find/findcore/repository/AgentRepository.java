@@ -10,6 +10,12 @@ public interface AgentRepository extends JpaRepository<Agent, Long> {
 
 	public Boolean existsByMobileno(String mobileno);
 
+	public Boolean existsByMobilenoAndIsEnabled(String mobileno, boolean isEnable);
+
+	public Agent findByMobilenoAndIsEnabled(String mobileno, boolean isEnable);
+
 	public Agent findByMobileno(String mobileno);
+
+	public Agent getByIdAndAndIsEnabled(Long id, boolean isEnable);
 
 }

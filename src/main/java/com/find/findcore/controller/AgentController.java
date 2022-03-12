@@ -7,9 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,10 +47,10 @@ public class AgentController {
 	JwtUtils jwtUtils;
 
 	@PostMapping({ "/agent-signup" })
-	public Response registerUser(@Valid @RequestBody Agent agentReq) {
+	public Response registerAgent(@Valid @RequestBody Agent agentReq) {
 		Response response = new Response();
 		try {
-			if (agentService.agentExists(agentReq.getMobileno())) {
+			if (agentService.enableAgentExists(agentReq.getMobileno())) {
 				response.markFailed(HttpStatus.BAD_REQUEST, "Mobile no. is already taken!");
 				return response;
 			}
@@ -75,20 +72,16 @@ public class AgentController {
 	}
 
 	@PostMapping({ "/agent-signin" })
-	public Response authenticateUser(@Valid @RequestBody Agent agentReq) {
+	public Response authenticateAgent(@Valid @RequestBody Agent agentReq) {
 		Response response = new Response();
 		try {
-			if (!agentService.agentExists(agentReq.getMobileno())) {
+			if (!agentService.enableAgentExists(agentReq.getMobileno())) {
 				response.markFailed(HttpStatus.BAD_REQUEST, "User not available. Please signup.");
 				return response;
 			} else {
 				Agent approvedAgent = agentService.agentSignIn(agentReq);
 
-				Authentication authentication = authenticationManager.authenticate(
-						new UsernamePasswordAuthenticationToken(agentReq.getMobileno(), agentReq.getPassword()));
-				SecurityContextHolder.getContext().setAuthentication(authentication);
-				//AgentAuthDetailsImpl authDetails = (AgentAuthDetailsImpl) authentication.getPrincipal();
-				String jwt = jwtUtils.generateJwtTokenForAgent(authentication);
+				String jwt = jwtUtils.generateJwtTokenForAgent(approvedAgent);
 				// RefreshToken refreshToken =
 				// refreshTokenService.createRefreshToken(agentReq.getId());
 				response.setToken(jwt);
@@ -115,11 +108,8 @@ public class AgentController {
 			} else {
 				Agent approvedAgent = agentService.agentVerify(agentReq);
 
-				Authentication authentication = authenticationManager.authenticate(
-						new UsernamePasswordAuthenticationToken(agentReq.getMobileno(), agentReq.getPassword()));
-				SecurityContextHolder.getContext().setAuthentication(authentication);
 //				AgentAuthDetailsImpl authDetails = (AgentAuthDetailsImpl) authentication.getPrincipal();
-				String jwt = jwtUtils.generateJwtTokenForAgent(authentication);
+				String jwt = jwtUtils.generateJwtTokenForAgent(approvedAgent);
 
 				response.setToken(jwt);
 				response.setData(approvedAgent);
@@ -130,6 +120,52 @@ public class AgentController {
 			log.error(e.getMessage());
 			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Error occurred during verification. Please try again!");
+			return response;
+		}
+	}
+
+	@PostMapping({ "/agent-exists" })
+	public Response agentExists(@RequestBody Agent agentReq) {
+		Response response = new Response();
+
+		try {
+			Agent agent = agentService.getEnableAgentByMobile(agentReq.getMobileno());
+
+			if (agent != null) {
+				response.setData(agent);
+				response.markSuccessful("Agent Exists!");
+			} else {
+				response.markFailed(HttpStatus.BAD_REQUEST, "User not available. Please signup.");
+			}
+			return response;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred. Please try again!");
+			return response;
+		}
+	}
+
+	@PostMapping({ "/change-password" })
+	public Response changePassword(@RequestBody Agent agentReq) {
+		Response response = new Response();
+
+		try {
+			Agent agent = agentService.getEnableAgentById(agentReq.getId());
+
+			if (agent != null) {
+				agentReq.setPassword(encoder.encode(agentReq.getPassword()));
+				Agent savedAgent = agentService.agentSignUp(agentReq);
+				response.setData(savedAgent);
+				response.markSuccessful("Password changed!");
+			} else {
+				response.markFailed(HttpStatus.BAD_REQUEST, "User not available. Please signup.");
+			}
+
+			return response;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error occurred during password change. Please try again!");
 			return response;
 		}
 	}

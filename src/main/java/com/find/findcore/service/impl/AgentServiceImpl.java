@@ -28,7 +28,7 @@ public class AgentServiceImpl implements AgentService, UserDetailsService {
 
 	@Override
 	public Agent agentSignIn(Agent agent) {
-		return agentRepository.findByMobileno(agent.getMobileno());
+		return agentRepository.findByMobilenoAndIsEnabled(agent.getMobileno(), true);
 	}
 
 	@Override
@@ -44,6 +44,31 @@ public class AgentServiceImpl implements AgentService, UserDetailsService {
 	}
 
 	@Override
+	public boolean enableAgentExists(String mobileno) {
+		return agentRepository.existsByMobilenoAndIsEnabled(mobileno, true);
+	}
+
+	@Override
+	public Agent getEnableAgentByMobile(String mobileno) {
+		return agentRepository.findByMobilenoAndIsEnabled(mobileno, true);
+	}
+
+	@Override
+	public Agent getAgentByMobile(String mobileno) {
+		return agentRepository.findByMobileno(mobileno);
+	}
+
+	@Override
+	public Agent getAgentById(Long id) {
+		return agentRepository.getById(id);
+	}
+
+	@Override
+	public Agent getEnableAgentById(Long id) {
+		return agentRepository.getByIdAndAndIsEnabled(id, true);
+	}
+
+	@Override
 	public List<Agent> getAllAgents() {
 		return agentRepository.findAll();
 	}
@@ -51,8 +76,9 @@ public class AgentServiceImpl implements AgentService, UserDetailsService {
 	@Override
 	@Transactional
 	public UserDetails loadUserByUsername(String mobileno) throws RuntimeException {
-		Agent agent = agentRepository.findByMobileno(mobileno);
+		Agent agent = agentRepository.findByMobilenoAndIsEnabled(mobileno, true);
 		log.info(agent.toString());
 		return AgentAuthDetailsImpl.build(agent);
 	}
+
 }
