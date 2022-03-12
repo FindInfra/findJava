@@ -31,24 +31,6 @@ public class Agent {
 	@JoinTable(name = "agent_agency", joinColumns = @JoinColumn(name = "agent_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "agency_id", referencedColumnName = "id"))
 	private Agency agency;
 	
-	/*
-	 * public Agent(Long id, @NotBlank @Size(max = 150) String
-	 * fullname, @NotBlank @Size(max = 15) String mobileno, Agency
-	 * agency, @NotBlank @Size(max = 120) String licenseno, @NotBlank @Size(max =
-	 * 120) String password, boolean isEnabled) { super(); this.id = id;
-	 * this.fullname = fullname; this.mobileno = mobileno; this.agency = agency;
-	 * this.licenseno = licenseno; this.password = password; this.isEnabled =
-	 * isEnabled; }
-	 * 
-	 * public Agent(@NotBlank @Size(max = 150) String fullname, @NotBlank @Size(max
-	 * = 15) String mobileno, Agency agency,
-	 * 
-	 * @NotBlank @Size(max = 120) String licenseno, @NotBlank @Size(max = 120)
-	 * String password) { super(); this.fullname = fullname; this.mobileno =
-	 * mobileno; this.agency = agency; this.licenseno = licenseno; this.password =
-	 * password; }
-	 */
-
 	public String getFullname() {
 		return fullname;
 	}

@@ -8,7 +8,7 @@ public interface AgentService {
 
 	Agent agentSignUp(Agent agent);
 
-	void agentSignUpIn(Agent agent);
+	Agent agentSignIn(Agent agent);
 
 	Agent agentVerify(Agent agent);
 

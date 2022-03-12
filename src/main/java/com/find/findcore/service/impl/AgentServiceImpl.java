@@ -27,8 +27,8 @@ public class AgentServiceImpl implements AgentService, UserDetailsService {
 	}
 
 	@Override
-	public void agentSignUpIn(Agent agent) {
-
+	public Agent agentSignIn(Agent agent) {
+		return agentRepository.findByMobileno(agent.getMobileno());
 	}
 
 	@Override
