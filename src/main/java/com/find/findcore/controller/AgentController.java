@@ -153,8 +153,8 @@ public class AgentController {
 			Agent agent = agentService.getEnableAgentById(agentReq.getId());
 
 			if (agent != null) {
-				agentReq.setPassword(encoder.encode(agentReq.getPassword()));
-				Agent savedAgent = agentService.agentSignUp(agentReq);
+				agent.setPassword(encoder.encode(agentReq.getPassword()));
+				Agent savedAgent = agentService.agentSignUp(agent);
 				response.setData(savedAgent);
 				response.markSuccessful("Password changed!");
 			} else {
