@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -79,6 +81,14 @@ public class AgentController {
 				response.markFailed(HttpStatus.BAD_REQUEST, "User not available. Please signup.");
 				return response;
 			} else {
+				try {
+				Authentication authentication = authenticationManager.authenticate(
+						new UsernamePasswordAuthenticationToken(agentReq.getMobileno(), agentReq.getPassword()));
+				}catch (Exception e) {
+					log.error(e.getMessage());
+					response.markFailed(HttpStatus.UNAUTHORIZED, "Wrong Credentials. Please try again!");
+					return response;
+				}
 				Agent approvedAgent = agentService.agentSignIn(agentReq);
 
 				String jwt = jwtUtils.generateJwtTokenForAgent(approvedAgent);
