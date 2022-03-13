@@ -124,7 +124,7 @@ public class AgentController {
 				String jwt = jwtUtils.generateJwtTokenForAgent(approvedAgent);
 
 				response.setToken(jwt);
-//				response.setData(approvedAgent);
+				response.setData(approvedAgent);
 				response.markSuccessful("Agent Verified!");
 				return response;
 			}
