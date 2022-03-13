@@ -81,4 +81,9 @@ public class AgentServiceImpl implements AgentService, UserDetailsService {
 		return AgentAuthDetailsImpl.build(agent);
 	}
 
+	@Override
+	public void deleteAgent(String mobileno) {
+		agentRepository.delete(agentRepository.findByMobileno(mobileno));
+	}
+
 }

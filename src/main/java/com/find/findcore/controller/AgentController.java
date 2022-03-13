@@ -55,6 +55,8 @@ public class AgentController {
 			if (agentService.enableAgentExists(agentReq.getMobileno())) {
 				response.markFailed(HttpStatus.BAD_REQUEST, "Mobile no. is already taken!");
 				return response;
+			}else if(agentService.agentExists(agentReq.getMobileno())) {
+				agentService.deleteAgent(agentReq.getMobileno());
 			}
 
 			agentReq.setPassword(encoder.encode(agentReq.getPassword()));
@@ -122,7 +124,7 @@ public class AgentController {
 				String jwt = jwtUtils.generateJwtTokenForAgent(approvedAgent);
 
 				response.setToken(jwt);
-				response.setData(approvedAgent);
+//				response.setData(approvedAgent);
 				response.markSuccessful("Agent Verified!");
 				return response;
 			}

@@ -26,4 +26,6 @@ public interface AgentService {
 	
 	Agent getEnableAgentById(Long id);
 
+	void deleteAgent(String mobileno);
+
 }
