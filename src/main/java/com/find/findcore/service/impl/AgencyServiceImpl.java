@@ -31,4 +31,9 @@ public class AgencyServiceImpl implements AgencyService {
 		return agencyRepository.save(agency);
 	}
 
+	@Override
+	public List<Agency> saveAgencies(List<Agency> agencies) {
+		return agencyRepository.saveAll(agencies);
+	}
+
 }

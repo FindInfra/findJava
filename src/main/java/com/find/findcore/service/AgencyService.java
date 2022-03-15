@@ -13,4 +13,6 @@ public interface AgencyService {
 
 	public List<Agency> getAllAgencies();
 
+	public List<Agency> saveAgencies(List<Agency> agencies);
+
 }

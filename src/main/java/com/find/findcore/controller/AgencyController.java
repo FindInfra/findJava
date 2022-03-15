@@ -1,5 +1,7 @@
 package com.find.findcore.controller;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,21 @@ public class AgencyController {
 		try {
 			response.markSuccessful("Agency Added.");
 			response.setData(agencyService.saveAgency(agency));
+			return response;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return response;
+		}
+	};
+	
+	@PostMapping({ "/add-agencies" })
+	public Response addAgency(@RequestBody List<Agency> agencies ) {
+		Response response = new Response();
+
+		try {
+			response.markSuccessful("Agencies Added.");
+			response.setData(agencyService.saveAgencies(agencies));
 			return response;
 		} catch (Exception e) {
 			log.error(e.getMessage());
