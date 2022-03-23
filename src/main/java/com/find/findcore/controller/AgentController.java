@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.find.findcore.model.entity.Agent;
+import com.find.findcore.model.entity.AgentProfile;
 import com.find.findcore.model.payload.response.Response;
 import com.find.findcore.security.jwt.JwtUtils;
 import com.find.findcore.service.AgencyService;
@@ -55,11 +57,18 @@ public class AgentController {
 			if (agentService.enableAgentExists(agentReq.getMobileno())) {
 				response.markFailed(HttpStatus.BAD_REQUEST, "Mobile no. is already taken!");
 				return response;
-			}else if(agentService.agentExists(agentReq.getMobileno())) {
+			} else if (agentService.agentExists(agentReq.getMobileno())) {
 				agentService.deleteAgent(agentReq.getMobileno());
 			}
 
 			agentReq.setPassword(encoder.encode(agentReq.getPassword()));
+
+			AgentProfile agentProfile = new AgentProfile();
+			agentProfile.setMobileno(agentReq.getMobileno());
+			agentProfile.setFullName(agentReq.getFullname());
+			agentProfile.setLicenseno(agentReq.getLicenseno());
+			agentService.saveProfile(agentProfile);
+
 			Agent savedAgent = agentService.agentSignUp(agentReq);
 			if (savedAgent != null) {
 				response.markSuccessful("Signup successfully!");
@@ -84,9 +93,9 @@ public class AgentController {
 				return response;
 			} else {
 				try {
-				Authentication authentication = authenticationManager.authenticate(
-						new UsernamePasswordAuthenticationToken(agentReq.getMobileno(), agentReq.getPassword()));
-				}catch (Exception e) {
+					Authentication authentication = authenticationManager.authenticate(
+							new UsernamePasswordAuthenticationToken(agentReq.getMobileno(), agentReq.getPassword()));
+				} catch (Exception e) {
 					log.error(e.getMessage());
 					response.markFailed(HttpStatus.UNAUTHORIZED, "Wrong Credentials. Please try again!");
 					return response;
@@ -192,6 +201,58 @@ public class AgentController {
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return response;
+		}
+	}
+
+	@GetMapping({ "/agent-profile" })
+	public Response getAgentProfile(@RequestHeader("Authorization") String token) {
+		Response response = new Response();
+		try {
+			log.info(token);
+
+			String mobileno = jwtUtils.getUserNameFromJwtToken(token);
+			log.info(mobileno);
+			response.setData(agentService.getAgentProfileByMobileno(mobileno));
+			response.markSuccessful("Agency Profile Fetched.");
+
+			return response;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return response;
+		}
+	}
+
+	@PostMapping({ "/remove-agent" })
+	public Response removeAgent(@RequestBody Agent agentReq) {
+		Response response = new Response();
+
+		try {
+			agentService.deleteAgent(agentReq.getMobileno());
+			response.markSuccessful("Agent removed!");
+
+			return response;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, "Please try again!");
+			return response;
+		}
+	}
+	
+	@PostMapping({ "/remove-agent-profile" })
+	public Response removeAgentProfile(@RequestBody Agent agentReq) {
+		Response response = new Response();
+
+		try {
+			agentService.deleteProfile(agentReq.getMobileno());
+			response.markSuccessful("Agent Profile removed!");
+
+			return response;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, "Please try again!");
 			return response;
 		}
 	}

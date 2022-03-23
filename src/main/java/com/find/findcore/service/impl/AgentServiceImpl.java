@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.find.findcore.model.entity.Agent;
+import com.find.findcore.model.entity.AgentProfile;
+import com.find.findcore.repository.AgentProfileRepository;
 import com.find.findcore.repository.AgentRepository;
 import com.find.findcore.service.AgentService;
 
@@ -20,6 +22,9 @@ public class AgentServiceImpl implements AgentService, UserDetailsService {
 
 	@Autowired
 	AgentRepository agentRepository;
+
+	@Autowired
+	AgentProfileRepository agentProfileRepository;
 
 	@Override
 	public Agent agentSignUp(Agent agent) {
@@ -84,6 +89,21 @@ public class AgentServiceImpl implements AgentService, UserDetailsService {
 	@Override
 	public void deleteAgent(String mobileno) {
 		agentRepository.delete(agentRepository.findByMobileno(mobileno));
+	}
+
+	@Override
+	public void saveProfile(AgentProfile agentProfile) {
+		agentProfileRepository.save(agentProfile);
+	}
+
+	@Override
+	public AgentProfile getAgentProfileByMobileno(String mobileno) {
+		return agentProfileRepository.findByMobileno(mobileno);
+	}
+	
+	@Override
+	public void deleteProfile(String mobileno) {
+		agentProfileRepository.deleteAll();
 	}
 
 }

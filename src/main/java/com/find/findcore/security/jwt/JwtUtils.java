@@ -44,7 +44,6 @@ public class JwtUtils {
 //		AgentAuthDetailsImpl agentAuthDetailsImpl = (AgentAuthDetailsImpl) authentication.getPrincipal();
 
 		return Jwts.builder().setSubject((agent.getMobileno())).setIssuedAt(new Date())
-				.setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
 				.signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
 	}
 

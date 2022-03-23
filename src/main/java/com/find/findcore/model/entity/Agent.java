@@ -1,5 +1,6 @@
 package com.find.findcore.model.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -27,10 +28,12 @@ public class Agent {
 	@Size(max = 120)
 	private String password;
 	private boolean isEnabled = false;
+	@Column()
+	private Boolean isSubscribed = false;
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinTable(name = "agent_agency", joinColumns = @JoinColumn(name = "agent_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "agency_id", referencedColumnName = "id"))
 	private Agency agency;
-	
+
 	public String getFullname() {
 		return fullname;
 	}
@@ -87,10 +90,19 @@ public class Agent {
 		this.isEnabled = isEnabled;
 	}
 
+	public Boolean isSubscribed() {
+		return isSubscribed;
+	}
+
+	public void setSubscribed(Boolean isSubscribed) {
+		this.isSubscribed = isSubscribed;
+	}
+
 	@Override
 	public String toString() {
-		return "Agent [id=" + id + ", fullname=" + fullname + ", mobileno=" + mobileno + ", agency=" + agency
-				+ ", licenseno=" + licenseno + ", password=" + password + ", isEnabled=" + isEnabled + "]";
+		return "Agent [id=" + id + ", fullname=" + fullname + ", mobileno=" + mobileno + ", licenseno=" + licenseno
+				+ ", password=" + password + ", isEnabled=" + isEnabled + ", isSubscribed=" + isSubscribed + ", agency="
+				+ agency + "]";
 	}
 
 }
