@@ -8,6 +8,11 @@ public interface SubscriptionService {
 
 	public List<Subscription> getAllSubscriptions();
 
-	public Subscription saveSubscriptions(Subscription subscription);
+	public List<Subscription> saveSubscriptions(List<Subscription> subscriptions);
+
+	public Subscription saveSubscription(Subscription subscription);
+
+	public void deleteAllSubscriptions();
+
 
 }

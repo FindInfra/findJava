@@ -21,8 +21,18 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	}
 
 	@Override
-	public Subscription saveSubscriptions(Subscription subscription) {
+	public Subscription saveSubscription(Subscription subscription) {
 		return subscriptionRepository.save(subscription);
+	}
+
+	@Override
+	public List<Subscription> saveSubscriptions(List<Subscription> subscriptions) {
+		return subscriptionRepository.saveAll(subscriptions);
+	}
+
+	@Override
+	public void deleteAllSubscriptions() {
+		subscriptionRepository.deleteAll();
 	}
 
 }

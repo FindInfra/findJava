@@ -20,6 +20,8 @@ public class Subscription {
 	private String title_description;
 	private String subs_description;
 	@Size(max = 150)
+	private String description_heading;
+	@Size(max = 150)
 	private String no_of_listing;
 	@Size(max = 150)
 	private String amount;
@@ -89,6 +91,14 @@ public class Subscription {
 
 	public void setSubs_description(String subs_description) {
 		this.subs_description = subs_description;
+	}
+
+	public String getDescription_heading() {
+		return description_heading;
+	}
+
+	public void setDescription_heading(String description_heading) {
+		this.description_heading = description_heading;
 	}
 
 }

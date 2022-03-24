@@ -20,10 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.find.findcore.model.entity.Agent;
 import com.find.findcore.model.entity.AgentProfile;
+import com.find.findcore.model.entity.NeedHelp;
 import com.find.findcore.model.payload.response.Response;
 import com.find.findcore.security.jwt.JwtUtils;
 import com.find.findcore.service.AgencyService;
 import com.find.findcore.service.AgentService;
+import com.find.findcore.service.NeedHelpService;
 import com.find.findcore.service.impl.RefreshTokenServiceImpl;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -34,6 +36,9 @@ public class AgentController {
 
 	@Autowired
 	AgentService agentService;
+	
+	@Autowired
+	NeedHelpService needHelpService;
 
 	@Autowired
 	AgencyService agencyService;
@@ -240,7 +245,7 @@ public class AgentController {
 			return response;
 		}
 	}
-	
+
 	@PostMapping({ "/remove-agent-profile" })
 	public Response removeAgentProfile(@RequestBody Agent agentReq) {
 		Response response = new Response();
@@ -248,6 +253,54 @@ public class AgentController {
 		try {
 			agentService.deleteProfile(agentReq.getMobileno());
 			response.markSuccessful("Agent Profile removed!");
+
+			return response;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, "Please try again!");
+			return response;
+		}
+	}
+
+	@PostMapping({ "/need-help" })
+	public Response needHelp(@RequestBody NeedHelp helpReq) {
+		Response response = new Response();
+
+		try {
+			needHelpService.addHelpRequest(helpReq);
+			response.markSuccessful("Request Taken!");
+
+			return response;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, "Please try again!");
+			return response;
+		}
+	}
+
+	@GetMapping({ "/show-help-requests" })
+	public Response showNeedHelpRequest() {
+		Response response = new Response();
+
+		try {
+			response.setData(needHelpService.showNeedHelpRequest());
+			response.markSuccessful("List Of All Help Requested!");
+
+			return response;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, "Please try again!");
+			return response;
+		}
+	}
+	
+	@GetMapping({ "/remove-help-requests" })
+	public Response removeNeedHelpRequest() {
+		Response response = new Response();
+
+		try {
+			needHelpService.removeNeedHelpRequests();
+			response.markSuccessful("Removed All Help Requests!");
 
 			return response;
 		} catch (Exception e) {

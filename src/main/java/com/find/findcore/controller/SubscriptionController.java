@@ -1,5 +1,7 @@
 package com.find.findcore.controller;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +31,23 @@ public class SubscriptionController {
 		Response response = new Response();
 
 		try {
+			response.markSuccessful("Subscription Added.");
+			response.setData(subscriptionService.saveSubscription(subscription));
+			return response;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return response;
+		}
+	};
+	
+	@PostMapping({ "/add-subscriptions" })
+	public Response addSubscriptions(@RequestBody List<Subscription> subscriptions) {
+		Response response = new Response();
+
+		try {
 			response.markSuccessful("Subscriptions Added.");
-			response.setData(subscriptionService.saveSubscriptions(subscription));
+			response.setData(subscriptionService.saveSubscriptions(subscriptions));
 			return response;
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -46,6 +63,22 @@ public class SubscriptionController {
 		try {
 			response.markSuccessful("Subscription Fetched.");
 			response.setData(subscriptionService.getAllSubscriptions());
+			return response;
+
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return response;
+		}
+	}
+
+	@GetMapping({ "/delete-subscriptions" })
+	public Response deleteAllSubscriptions() {
+		Response response = new Response();
+
+		try {
+			response.markSuccessful("All Subscription Deleted.");
+			subscriptionService.deleteAllSubscriptions();
 			return response;
 
 		} catch (Exception e) {
