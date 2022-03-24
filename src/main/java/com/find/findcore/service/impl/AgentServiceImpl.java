@@ -42,6 +42,13 @@ public class AgentServiceImpl implements AgentService, UserDetailsService {
 		agent.setEnabled(true);
 		return agentRepository.save(agent);
 	}
+	
+	@Override
+	public Agent agentSubscribe(Agent agent) {
+		agent = agentRepository.getById(agent.getId());
+		agent.setSubscribed(true);
+		return agentRepository.save(agent);
+	}
 
 	@Override
 	public boolean agentExists(String mobileno) {

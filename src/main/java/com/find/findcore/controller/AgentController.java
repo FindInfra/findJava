@@ -36,7 +36,7 @@ public class AgentController {
 
 	@Autowired
 	AgentService agentService;
-	
+
 	@Autowired
 	NeedHelpService needHelpService;
 
@@ -196,6 +196,24 @@ public class AgentController {
 		}
 	}
 
+	/** need to modify later */
+	@PostMapping({ "/subscribe-agent" })
+	public Response subscribeAgent(@RequestBody Agent agentReq) {
+		Response response = new Response();
+
+		try {
+			Agent savedAgent = agentService.agentSubscribe(agentReq);
+			response.setData(savedAgent);
+			response.markSuccessful("Agent subscribed!");
+			return response;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error occurred during password change. Please try again!");
+			return response;
+		}
+	}
+
 	@GetMapping({ "/agents" })
 	public Response getAllAgents() {
 		Response response = new Response();
@@ -293,7 +311,7 @@ public class AgentController {
 			return response;
 		}
 	}
-	
+
 	@GetMapping({ "/remove-help-requests" })
 	public Response removeNeedHelpRequest() {
 		Response response = new Response();

@@ -35,4 +35,6 @@ public interface AgentService {
 
 	void deleteProfile(String mobileno);
 
+	Agent agentSubscribe(Agent agent);
+
 }
