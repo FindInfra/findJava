@@ -1,4 +1,4 @@
-package com.find.findcore.service.impl;
+package com.find.findcore.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

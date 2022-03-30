@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.find.findcore.model.entity.NeedHelp;
+import com.find.findcore.repository.NeedHelpRepository;
 import com.find.findcore.service.NeedHelpService;
 
 @Service

@@ -49,4 +49,9 @@ public class Agency {
 		this.website = website;
 	}
 
+	@Override
+	public String toString() {
+		return "Agency [id=" + id + ", name=" + name + ", licenseno=" + licenseno + ", website=" + website + "]";
+	}
+
 }
