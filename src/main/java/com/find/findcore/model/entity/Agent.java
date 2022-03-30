@@ -34,6 +34,10 @@ public class Agent {
 	@JoinTable(name = "agent_agency", joinColumns = @JoinColumn(name = "agent_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "agency_id", referencedColumnName = "id"))
 	private Agency agency;
 
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinTable(name = "agent_profiles", joinColumns = @JoinColumn(name = "agent_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "profile_id", referencedColumnName = "id"))
+	private AgentProfile profile;
+
 	public String getFullname() {
 		return fullname;
 	}
@@ -96,6 +100,22 @@ public class Agent {
 
 	public void setSubscribed(Boolean isSubscribed) {
 		this.isSubscribed = isSubscribed;
+	}
+
+	public Boolean getIsSubscribed() {
+		return isSubscribed;
+	}
+
+	public void setIsSubscribed(Boolean isSubscribed) {
+		this.isSubscribed = isSubscribed;
+	}
+
+	public AgentProfile getProfile() {
+		return profile;
+	}
+
+	public void setProfile(AgentProfile profile) {
+		this.profile = profile;
 	}
 
 	@Override

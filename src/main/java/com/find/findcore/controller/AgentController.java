@@ -58,6 +58,8 @@ public class AgentController {
 	@PostMapping({ "/agent-signup" })
 	public Response registerAgent(@Valid @RequestBody Agent agentReq) {
 		Response response = new Response();
+		Agent agent = new Agent();
+		
 		try {
 			if (agentService.enableAgentExists(agentReq.getMobileno())) {
 				response.markFailed(HttpStatus.BAD_REQUEST, "Mobile no. is already taken!");
@@ -66,15 +68,22 @@ public class AgentController {
 				agentService.deleteAgent(agentReq.getMobileno());
 			}
 
-			agentReq.setPassword(encoder.encode(agentReq.getPassword()));
-
+			agent.setPassword(encoder.encode(agentReq.getPassword()));
+			agent.setFullname(agentReq.getFullname());
+			agent.setIsSubscribed(agentReq.getIsSubscribed());
+			agent.setLicenseno(agentReq.getLicenseno());
+			agent.setMobileno(agentReq.getMobileno());
+			agent.setAgency(agentReq.getAgency());
+			
 			AgentProfile agentProfile = new AgentProfile();
 			agentProfile.setMobileno(agentReq.getMobileno());
 			agentProfile.setFullName(agentReq.getFullname());
 			agentProfile.setLicenseno(agentReq.getLicenseno());
-			agentService.saveProfile(agentProfile);
-
-			Agent savedAgent = agentService.agentSignUp(agentReq);
+			
+			agentProfile = agentService.saveProfile(agentProfile);
+			agent.setProfile(agentProfile);
+			log.info(agent.toString());
+			Agent savedAgent = agentService.agentSignUp(agent);
 			if (savedAgent != null) {
 				response.markSuccessful("Signup successfully!");
 				return response;
@@ -111,7 +120,7 @@ public class AgentController {
 				// RefreshToken refreshToken =
 				// refreshTokenService.createRefreshToken(agentReq.getId());
 				response.setToken(jwt);
-				response.setData(approvedAgent);
+				response.setData(approvedAgent.getProfile());
 				response.markSuccessful("Signin Successfully!");
 				return response;
 			}
@@ -228,26 +237,6 @@ public class AgentController {
 		}
 	}
 
-	@GetMapping({ "/agent-profile" })
-	public Response getAgentProfile(@RequestHeader("Authorization") String token) {
-		Response response = new Response();
-		try {
-			log.info(token);
-
-			String mobileno = jwtUtils.getUserNameFromJwtToken(token);
-			log.info(mobileno);
-			response.setData(agentService.getAgentProfileByMobileno(mobileno));
-			response.markSuccessful("Agency Profile Fetched.");
-
-			return response;
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.error(e.getMessage());
-			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-			return response;
-		}
-	}
-
 	@PostMapping({ "/remove-agent" })
 	public Response removeAgent(@RequestBody Agent agentReq) {
 		Response response = new Response();
@@ -264,13 +253,32 @@ public class AgentController {
 		}
 	}
 
-	@PostMapping({ "/remove-agent-profile" })
-	public Response removeAgentProfile(@RequestBody Agent agentReq) {
+	@GetMapping({ "/agent-profile" })
+	public Response getAgentProfile(@RequestHeader("Authorization") String token) {
+		Response response = new Response();
+		try {
+
+			String mobileno = jwtUtils.getUserNameFromJwtToken(token);
+			response.setData(agentService.getAgentProfileByMobileno(mobileno));
+			response.markSuccessful("Agency Profile Fetched.");
+
+			return response;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return response;
+		}
+	}
+
+	@PostMapping({ "/change-avatar" })
+	public Response updateAvatar(@RequestHeader("Authorization") String token, @RequestBody AgentProfile agentProfile) {
 		Response response = new Response();
 
 		try {
-			agentService.deleteProfile(agentReq.getMobileno());
-			response.markSuccessful("Agent Profile removed!");
+			String mobileno = jwtUtils.getUserNameFromJwtToken(token);
+			agentService.changeAvatar(agentProfile, mobileno);
+			response.markSuccessful("Avatar Changed!");
 
 			return response;
 		} catch (Exception e) {
@@ -278,6 +286,28 @@ public class AgentController {
 			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, "Please try again!");
 			return response;
 		}
+
+	}
+	
+	@PostMapping({ "/update-profile" })
+	public Response updateProfile(@RequestHeader("Authorization") String token, @RequestBody AgentProfile agentProfile) {
+		Response response = new Response();
+
+		try {
+			String mobileno = jwtUtils.getUserNameFromJwtToken(token);
+			Agent agent = agentService.updateProfile(agentProfile, mobileno);
+			
+			String jwt = jwtUtils.generateJwtTokenForAgent(agent);
+			response.setToken(jwt);
+			response.markSuccessful("Profile Updated!");
+
+			return response;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, "Please try again!");
+			return response;
+		}
+
 	}
 
 	@PostMapping({ "/need-help" })

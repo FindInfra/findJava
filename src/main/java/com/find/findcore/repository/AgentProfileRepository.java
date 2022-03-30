@@ -6,8 +6,4 @@ import com.find.findcore.model.entity.AgentProfile;
 
 public interface AgentProfileRepository extends JpaRepository<AgentProfile, Long> {
 
-	AgentProfile findByMobileno(String mobileno);
-
-	void deleteByMobileno(String mobileno);
-
 }

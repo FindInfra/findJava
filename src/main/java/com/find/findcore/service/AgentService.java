@@ -29,12 +29,14 @@ public interface AgentService {
 
 	void deleteAgent(String mobileno);
 
-	void saveProfile(AgentProfile agentProfile);
-
 	AgentProfile getAgentProfileByMobileno(String mobileno);
 
-	void deleteProfile(String mobileno);
-
 	Agent agentSubscribe(Agent agent);
+
+	void changeAvatar(AgentProfile agentProfile, String mobileno);
+
+	Agent updateProfile(AgentProfile agentProfile, String mobileno);
+
+	AgentProfile saveProfile(AgentProfile agentProfile);
 
 }

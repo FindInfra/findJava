@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,7 @@ public class AgentServiceImpl implements AgentService, UserDetailsService {
 		agent.setEnabled(true);
 		return agentRepository.save(agent);
 	}
-	
+
 	@Override
 	public Agent agentSubscribe(Agent agent) {
 		agent = agentRepository.getById(agent.getId());
@@ -99,18 +100,42 @@ public class AgentServiceImpl implements AgentService, UserDetailsService {
 	}
 
 	@Override
-	public void saveProfile(AgentProfile agentProfile) {
-		agentProfileRepository.save(agentProfile);
+	public AgentProfile getAgentProfileByMobileno(String mobileno) {
+		Agent agent = agentRepository.findByMobileno(mobileno);
+		return agent.getProfile();
 	}
 
 	@Override
-	public AgentProfile getAgentProfileByMobileno(String mobileno) {
-		return agentProfileRepository.findByMobileno(mobileno);
+	public void changeAvatar(AgentProfile agentProfile, String mobileno) {
+
+		Agent agent = agentRepository.findByMobileno(mobileno);
+		AgentProfile profile = agent.getProfile();
+		profile.setAvatarImage(agentProfile.getAvatarImage());
+		agent.setProfile(profile);
+		agentRepository.save(agent);
 	}
-	
+
 	@Override
-	public void deleteProfile(String mobileno) {
-		agentProfileRepository.deleteAll();
+	public Agent updateProfile(AgentProfile agentProfile, String mobileno) {
+		
+		Agent agent = agentRepository.findByMobileno(mobileno);
+		AgentProfile profile = agent.getProfile();
+
+		profile.setFullName(agentProfile.getFullName());
+		profile.setMobileno(agentProfile.getMobileno());
+		profile.setVideoUrl(agentProfile.getVideoUrl());
+
+		profile = agentProfileRepository.save(profile);
+		agent.setProfile(profile);
+		agent.setMobileno(agentProfile.getMobileno());
+		agent.setFullname(agentProfile.getFullName());
+
+		return agentRepository.save(agent);
+	}
+
+	@Override
+	public AgentProfile saveProfile(AgentProfile agentProfile) {
+		return agentProfileRepository.save(agentProfile);
 	}
 
 }

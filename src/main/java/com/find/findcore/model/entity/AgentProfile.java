@@ -27,7 +27,7 @@ public class AgentProfile {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private Long id;
 	String fullName;
 	@NotBlank
 	@Size(max = 15)
@@ -41,4 +41,12 @@ public class AgentProfile {
 	LocalDateTime dateCreated;
 	@UpdateTimestamp
 	LocalDateTime lastModified;
+
+	@Override
+	public String toString() {
+		return "AgentProfile [id=" + id + ", fullName=" + fullName + ", mobileno=" + mobileno + ", licenseno="
+				+ licenseno + ", avatarImage=" + avatarImage + ", videoUrl=" + videoUrl + ", dateCreated=" + dateCreated
+				+ ", lastModified=" + lastModified + "]";
+	}
+
 }
