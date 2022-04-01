@@ -120,7 +120,7 @@ public class AgentController {
 				// RefreshToken refreshToken =
 				// refreshTokenService.createRefreshToken(agentReq.getId());
 				response.setToken(jwt);
-				response.setData(approvedAgent.getProfile());
+				response.setData(approvedAgent);
 				response.markSuccessful("Signin Successfully!");
 				return response;
 			}
