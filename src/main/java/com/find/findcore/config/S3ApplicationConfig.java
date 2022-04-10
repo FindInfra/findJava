@@ -24,7 +24,7 @@ public class S3ApplicationConfig {
 //    private String accessKeyId;
 //    @Value("${cloud.aws.secret_access_key}")
 //    private String secretAccessKey;
-    @Value("${cloud.aws.s3.region}")
+    @Value("${cloud.aws.region.static}")
     private String region;
  
     @Bean
