@@ -65,7 +65,7 @@ public class StaticController {
 		List<String> profAvtr = new ArrayList<>();
 		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/default.png");
 		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/bald.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/beanie 2_a.png");
+		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/beanie-2_a.png");
 		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/beanie_a.png");
 		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/beard_black.png");
 		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/curly-hair-2-copy.png");
@@ -76,7 +76,7 @@ public class StaticController {
 		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/goatee_grey.png");
 		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/Grey_glasses.png");
 		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/Grey.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/happy 2_a.png");
+		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/happy-2_a.png");
 		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/happy_a.png");
 		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/happy_brown.png");
 		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/happy-face_a.png");
@@ -93,7 +93,7 @@ public class StaticController {
 		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/model-3-copy.png");
 		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/model-4_a.png");
 		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/pink.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/ponytail 2_a.png");
+		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/ponytail-2_a.png");
 		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/ponytail_a.png");
 		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/short-hair_a.png");
 		return profAvtr;
