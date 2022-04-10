@@ -303,11 +303,14 @@ public class AgentController {
 		Response response = new Response();
 
 		try {
-			
-			awss3Service.uploadFile(agentVideo); 
+			try {
+				awss3Service.uploadFile(agentVideo);
+			} catch (Exception e) {
+				log.error(e.getMessage());
+			}
 			String mobileno = jwtUtils.getUserNameFromJwtToken(token);
 			Agent agent = agentService.updateProfile(agentProfile, mobileno);
-			
+
 			String jwt = jwtUtils.generateJwtTokenForAgent(agent);
 			response.setToken(jwt);
 			response.markSuccessful("Profile Updated!");
