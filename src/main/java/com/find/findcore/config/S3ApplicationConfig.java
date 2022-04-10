@@ -20,21 +20,21 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 @Configuration
 public class S3ApplicationConfig {
 
-    @Value("${cloud.aws.access_key_id}")
-    private String accessKeyId;
-    @Value("${cloud.aws.secret_access_key}")
-    private String secretAccessKey;
+//    @Value("${cloud.aws.access_key_id}")
+//    private String accessKeyId;
+//    @Value("${cloud.aws.secret_access_key}")
+//    private String secretAccessKey;
     @Value("${cloud.aws.s3.region}")
     private String region;
  
     @Bean
     public AmazonS3 getAmazonS3Cient() {
-        final BasicAWSCredentials basicAWSCredentials = new BasicAWSCredentials(accessKeyId, secretAccessKey);
+        //final BasicAWSCredentials basicAWSCredentials = new BasicAWSCredentials(accessKeyId, secretAccessKey);
         // Get AmazonS3 client and return the s3Client object.
         return AmazonS3ClientBuilder
                 .standard()
                 .withRegion(Regions.fromName(region))
-                .withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials))
+                //.withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials))
                 .build();
     }
     
