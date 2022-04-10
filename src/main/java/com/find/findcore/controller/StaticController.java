@@ -78,17 +78,35 @@ public class StaticController {
     @GetMapping(value = "/profileAvatar")
     public List<String> getProfileAvatarImages() {
         List<String> profAvtr = new ArrayList<>();
-        profAvtr.add("https://sortprofileavatar.s3.us-east-2.amazonaws.com/male.png");
-        profAvtr.add("https://sortprofileavatar.s3.us-east-2.amazonaws.com/female.png");
-        profAvtr.add("https://sortprofileavatar.s3.us-east-2.amazonaws.com/superhero1.png");
-        profAvtr.add("https://sortprofileavatar.s3.us-east-2.amazonaws.com/superhero2.png");
-        profAvtr.add("https://sortprofileavatar.s3.us-east-2.amazonaws.com/superhero3.png");
-        profAvtr.add("https://sortprofileavatar.s3.us-east-2.amazonaws.com/superhero4.png");
-        profAvtr.add("https://sortprofileavatar.s3.us-east-2.amazonaws.com/superhero5.png");
-        profAvtr.add("https://sortprofileavatar.s3.us-east-2.amazonaws.com/superhero6.png");
-        profAvtr.add("https://sortprofileavatar.s3.us-east-2.amazonaws.com/superhero7.png");
-        profAvtr.add("https://sortprofileavatar.s3.us-east-2.amazonaws.com/superhero8.png");
-        profAvtr.add("https://sortprofileavatar.s3.us-east-2.amazonaws.com/lgbt.png");
+        profAvtr.add("https://drive.google.com/file/d/1zUGAWN92Dfx2-acai6cFydqMWpXLAsgK/view?usp=sharing");
+        profAvtr.add("https://drive.google.com/file/d/1zUGAWN92Dfx2-acai6cFydqMWpXLAsgK/view?usp=sharing");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
+        profAvtr.add("");
         return profAvtr;
     }
 }
