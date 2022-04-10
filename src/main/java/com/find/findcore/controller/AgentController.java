@@ -16,13 +16,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.find.findcore.model.entity.Agent;
 import com.find.findcore.model.entity.AgentProfile;
 import com.find.findcore.model.entity.NeedHelp;
 import com.find.findcore.model.payload.response.Response;
 import com.find.findcore.security.jwt.JwtUtils;
+import com.find.findcore.service.AWSS3Service;
 import com.find.findcore.service.AgencyService;
 import com.find.findcore.service.AgentService;
 import com.find.findcore.service.NeedHelpService;
@@ -55,6 +58,9 @@ public class AgentController {
 	@Autowired
 	JwtUtils jwtUtils;
 
+	@Autowired
+	AWSS3Service awss3Service; 
+	
 	@PostMapping({ "/agent-signup" })
 	public Response registerAgent(@Valid @RequestBody Agent agentReq) {
 		Response response = new Response();
@@ -270,6 +276,8 @@ public class AgentController {
 			return response;
 		}
 	}
+	
+	
 
 	@PostMapping({ "/change-avatar" })
 	public Response updateAvatar(@RequestHeader("Authorization") String token, @RequestBody AgentProfile agentProfile) {
@@ -290,10 +298,13 @@ public class AgentController {
 	}
 	
 	@PostMapping({ "/update-profile" })
-	public Response updateProfile(@RequestHeader("Authorization") String token, @RequestBody AgentProfile agentProfile) {
+	public Response updateProfile(@RequestHeader("Authorization") String token, @RequestBody AgentProfile agentProfile,
+			@RequestPart(value= "file") final MultipartFile agentVideo) {
 		Response response = new Response();
 
 		try {
+			
+			awss3Service.uploadFile(agentVideo); 
 			String mobileno = jwtUtils.getUserNameFromJwtToken(token);
 			Agent agent = agentService.updateProfile(agentProfile, mobileno);
 			
