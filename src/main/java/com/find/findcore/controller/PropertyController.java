@@ -297,7 +297,7 @@ public class PropertyController {
 	public Response getAllPropertyAdjectives() {
 		Response response = new Response();
 		try {
-			response.markSuccessful("Property Amenities deleted.");
+			response.markSuccessful("Property Adjectives Fetched.");
 			response.setData(propertyService.getAllPropertyAdjectives());
 			return response;
 		} catch (Exception e) {
