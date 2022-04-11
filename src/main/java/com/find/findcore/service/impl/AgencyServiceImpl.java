@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.find.findcore.model.entity.Agency;
@@ -23,7 +25,7 @@ public class AgencyServiceImpl implements AgencyService {
 
 	@Override
 	public List<Agency> getAllAgencies() {
-		return agencyRepository.findAll();
+		return agencyRepository.findAll(Sort.by(Direction.ASC, "name"));
 	}
 
 	@Override
