@@ -1,7 +1,9 @@
 package com.find.findcore.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -237,6 +239,21 @@ public class PropertyServiceImpl implements PropertyService {
 			propertyAmenitiesRepository.truncateTable();
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public Map<String,Object> getAllPropertyAdjectives() {
+		Map<String,Object> objects = new HashMap<String, Object>();
+		try {
+			objects.put("Design",propertyDesignRepository.findAll());
+			objects.put("Neighborhood",propertyNeighborhoodRepository.findAll());
+			objects.put("Views",propertyViewsRepository.findAll());
+			objects.put("Amenities",propertyAmenitiesRepository.findAll());
+			return objects;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 }

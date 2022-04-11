@@ -292,4 +292,18 @@ public class PropertyController {
 			return response;
 		}
 	}
+	
+	@GetMapping({ "/property-adjectives" })
+	public Response getAllPropertyAdjectives() {
+		Response response = new Response();
+		try {
+			response.markSuccessful("Property Amenities deleted.");
+			response.setData(propertyService.getAllPropertyAdjectives());
+			return response;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return response;
+		}
+	}
 }

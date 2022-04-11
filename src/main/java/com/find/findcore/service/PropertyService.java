@@ -1,6 +1,7 @@
 package com.find.findcore.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.find.findcore.model.entity.Property;
 import com.find.findcore.model.entity.PropertyAmenities;
@@ -45,5 +46,7 @@ public interface PropertyService {
 	void deleteAllPropertyAmenities();
 
 	List<PropertyAmenities> getPropertyAmenities();
+
+	Map<String, Object> getAllPropertyAdjectives();
 
 }
