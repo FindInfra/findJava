@@ -40,7 +40,7 @@ public class PropertyController {
 
 	};
 
-	@GetMapping({ "/property" })
+	@PostMapping({ "/property" })
 	public Response getProperty(@RequestBody Property property) {
 		Response response = new Response();
 		try {

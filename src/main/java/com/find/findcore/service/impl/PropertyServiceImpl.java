@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.find.findcore.model.entity.Property;
+import com.find.findcore.model.entity.PropertyAddress;
 import com.find.findcore.model.entity.PropertyAmenities;
 import com.find.findcore.model.entity.PropertyDesign;
 import com.find.findcore.model.entity.PropertyNeighborhood;
@@ -18,6 +19,7 @@ import com.find.findcore.model.enumeration.EPropertyAmenities;
 import com.find.findcore.model.enumeration.EPropertyDesign;
 import com.find.findcore.model.enumeration.EPropertyNeighborhood;
 import com.find.findcore.model.enumeration.EPropertyViews;
+import com.find.findcore.repository.PropertyAddressRepository;
 import com.find.findcore.repository.PropertyAmenitiesRepository;
 import com.find.findcore.repository.PropertyDesignRepository;
 import com.find.findcore.repository.PropertyNeighborhoodRepository;
@@ -42,6 +44,9 @@ public class PropertyServiceImpl implements PropertyService {
 	@Autowired
 	PropertyAmenitiesRepository propertyAmenitiesRepository;
 
+	@Autowired
+	PropertyAddressRepository propertyAddressRepository;
+	
 	@Override
 	public Property addProperty(Property property) {
 		try {
@@ -242,6 +247,36 @@ public class PropertyServiceImpl implements PropertyService {
 		}
 	}
 
+	@Override
+	public void addPropertyAddress(PropertyAddress address) {
+		try {
+			propertyAddressRepository.save(address);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public List<PropertyAddress> getPropertyAddress() {
+		try {
+			return propertyAddressRepository.findAll();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+
+	@Override
+	@Transactional
+	public void deletePropertyAddress(PropertyAddress address) {
+		try {
+			propertyAddressRepository.delete(address);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	public Map<String,Object> getAllPropertyAdjectives() {
 		Map<String,Object> objects = new HashMap<String, Object>();

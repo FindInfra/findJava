@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.find.findcore.model.entity.Property;
+import com.find.findcore.model.entity.PropertyAddress;
 import com.find.findcore.model.entity.PropertyAmenities;
 import com.find.findcore.model.entity.PropertyDesign;
 import com.find.findcore.model.entity.PropertyNeighborhood;
@@ -46,6 +47,12 @@ public interface PropertyService {
 	void deleteAllPropertyAmenities();
 
 	List<PropertyAmenities> getPropertyAmenities();
+	
+	void addPropertyAddress(PropertyAddress address);
+
+	List<PropertyAddress> getPropertyAddress();
+
+	void deletePropertyAddress(PropertyAddress address);
 
 	Map<String, Object> getAllPropertyAdjectives();
 
