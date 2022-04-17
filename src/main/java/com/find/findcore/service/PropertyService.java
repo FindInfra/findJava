@@ -48,7 +48,7 @@ public interface PropertyService {
 
 	List<PropertyAmenities> getPropertyAmenities();
 	
-	void addPropertyAddress(PropertyAddress address);
+	PropertyAddress addPropertyAddress(PropertyAddress address);
 
 	List<PropertyAddress> getPropertyAddress();
 

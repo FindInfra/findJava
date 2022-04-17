@@ -8,11 +8,16 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.find.findcore.model.entity.Agent;
 import com.find.findcore.model.entity.Property;
+import com.find.findcore.model.entity.PropertyAddress;
 import com.find.findcore.model.payload.response.Response;
+import com.find.findcore.security.jwt.JwtUtils;
+import com.find.findcore.service.AgentService;
 import com.find.findcore.service.PropertyService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -23,13 +28,30 @@ public class PropertyController {
 
 	@Autowired
 	PropertyService propertyService;
+	
+	@Autowired
+	AgentService agentService;
+	
+	@Autowired
+	JwtUtils jwtUtils;
 
 	@PostMapping({ "/add-property" })
-	public Response addProperty(@RequestBody Property property) {
+	public Response addProperty(@RequestBody Property property, @RequestHeader("Authorization") String token) {
 		Response response = new Response();
 		try {
-			response.markSuccessful("Property Added.");
-			response.setData(propertyService.addProperty(property));
+
+			String mobileno = jwtUtils.getUserNameFromJwtToken(token);
+			Agent agent = agentService.getAgentByMobile(mobileno);
+			if (agent != null) {
+				PropertyAddress address = property.getProperty_address();
+				address = propertyService.addPropertyAddress(address);
+				property.setProperty_address(address);
+				property.setAgent(agent);
+				response.setData(propertyService.addProperty(property));
+				response.markSuccessful("Property Added.");
+			}else
+				response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, "Agent not found.");
+
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
@@ -45,7 +67,8 @@ public class PropertyController {
 		Response response = new Response();
 		try {
 			response.markSuccessful("Property Fetched.");
-			response.setData(propertyService.getPropertyById(property));
+			property = propertyService.getPropertyById(property);
+			response.setData(property);
 			return response;
 
 		} catch (Exception e) {

@@ -2,6 +2,7 @@ package com.find.findcore.model.entity;
 
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -9,13 +10,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "property")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Property {
 
 	@Id
@@ -47,23 +51,23 @@ public class Property {
 	@JoinTable(name = "agent_property", joinColumns = @JoinColumn(name = "propery_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "agent_id", referencedColumnName = "id"))
 	private Agent agent;
 
-	@OneToOne(fetch = FetchType.EAGER)
-	@JoinTable(name = "agent_property_address", joinColumns = @JoinColumn(name = "propery_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "agent_id", referencedColumnName = "id"))
+	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinTable(name = "agent_property_address", joinColumns = @JoinColumn(name = "propery_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "address_id", referencedColumnName = "id"))
 	private PropertyAddress property_address;
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "agent_property_views", joinColumns = @JoinColumn(name = "propery_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "views_id", referencedColumnName = "id"))
 	private Set<PropertyViews> property_views;
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "agent_property_design", joinColumns = @JoinColumn(name = "propery_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "design_id", referencedColumnName = "id"))
-	private Set<PropertyDesign> property_design;
+	private Set<PropertyDesign> property_designs;
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "agent_property_neighborhood", joinColumns = @JoinColumn(name = "propery_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "neighborhood_id", referencedColumnName = "id"))
 	private Set<PropertyNeighborhood> property_neighborhoods;
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "agent_property_amenities", joinColumns = @JoinColumn(name = "propery_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "amenities_id", referencedColumnName = "id"))
 	private Set<PropertyAmenities> property_amenities;
 
@@ -171,4 +175,51 @@ public class Property {
 		this.landlord_rating = landlord_rating;
 	}
 
+	public Agent getAgent() {
+		return agent;
+	}
+
+	public void setAgent(Agent agent) {
+		this.agent = agent;
+	}
+
+	public PropertyAddress getProperty_address() {
+		return property_address;
+	}
+
+	public void setProperty_address(PropertyAddress property_address) {
+		this.property_address = property_address;
+	}
+
+	public Set<PropertyViews> getProperty_views() {
+		return property_views;
+	}
+
+	public void setProperty_views(Set<PropertyViews> property_views) {
+		this.property_views = property_views;
+	}
+
+	public Set<PropertyDesign> getProperty_designs() {
+		return property_designs;
+	}
+
+	public void setProperty_designs(Set<PropertyDesign> property_designs) {
+		this.property_designs = property_designs;
+	}
+
+	public Set<PropertyNeighborhood> getProperty_neighborhoods() {
+		return property_neighborhoods;
+	}
+
+	public void setProperty_neighborhoods(Set<PropertyNeighborhood> property_neighborhoods) {
+		this.property_neighborhoods = property_neighborhoods;
+	}
+
+	public Set<PropertyAmenities> getProperty_amenities() {
+		return property_amenities;
+	}
+
+	public void setProperty_amenities(Set<PropertyAmenities> property_amenities) {
+		this.property_amenities = property_amenities;
+	}
 }

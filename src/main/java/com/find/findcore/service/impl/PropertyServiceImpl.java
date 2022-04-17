@@ -248,12 +248,13 @@ public class PropertyServiceImpl implements PropertyService {
 	}
 
 	@Override
-	public void addPropertyAddress(PropertyAddress address) {
+	public PropertyAddress addPropertyAddress(PropertyAddress address) {
 		try {
-			propertyAddressRepository.save(address);
+			return propertyAddressRepository.save(address);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 	@Override
