@@ -17,16 +17,17 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.find.findcore.service.impl.UserDetailsServiceImpl;
+import com.find.findcore.service.impl.AgentServiceImpl;
 
-public class AuthTokenFilter extends OncePerRequestFilter {
+public class AgentAuthTokenFilter extends OncePerRequestFilter {
+
 	@Autowired
 	private JwtUtils jwtUtils;
 
 	@Autowired
-	private UserDetailsServiceImpl userDetailsService;
+	private AgentServiceImpl agentServiceImpl;
 
-	private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
+	private static final Logger logger = LoggerFactory.getLogger(AgentAuthTokenFilter.class);
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -34,14 +35,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 		try {
 			String jwt = parseJwt(request);
 			if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
-				/*
-				 * String username = jwtUtils.getUserNameFromJwtToken(jwt);
-				 * 
-				 * UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-				 */
-				String email = jwtUtils.getUserEmailFromJwtToken(jwt);
+				String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
-				UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+				UserDetails userDetails = agentServiceImpl.loadUserByUsername(username);
 				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities());
 				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

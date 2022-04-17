@@ -1,0 +1,14 @@
+package com.find.findcore.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+
+import com.find.findcore.model.entity.PropertyViews;
+
+public interface PropertyViewsRepository extends JpaRepository<PropertyViews, Long> {
+
+	@Modifying
+	@Query(value = "TRUNCATE TABLE property_views RESTART IDENTITY;", nativeQuery = true)
+	void truncateTable();
+}
