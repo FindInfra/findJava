@@ -292,6 +292,7 @@ public class PropertyServiceImpl implements PropertyService {
 			objects.put("Neighborhood",propertyNeighborhoodRepository.findAll());
 			objects.put("Views",propertyViewsRepository.findAll());
 			objects.put("Amenities",propertyAmenitiesRepository.findAll());
+			objects.put("Districts",propertyDistrictsRepository.findAll());
 			return objects;
 		} catch (Exception e) {
 			e.printStackTrace();
