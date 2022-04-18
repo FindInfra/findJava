@@ -329,4 +329,48 @@ public class PropertyController {
 			return response;
 		}
 	}
+	
+	@PostMapping({ "/add-property-districts" })
+	public Response addPropertyDistricts() {
+		Response response = new Response();
+		try {
+			response.markSuccessful("Property Districts added!");
+			propertyService.addPropertyDistricts();
+
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return response;
+		}
+		return response;
+	}
+
+	@GetMapping({ "/property-districts" })
+	public Response getPropertyDistricts() {
+		Response response = new Response();
+		try {
+			response.markSuccessful("Property Districts Fetched.");
+			response.setData(propertyService.getPropertyDistricts());
+			return response;
+
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return response;
+		}
+	}
+
+	@GetMapping({ "/delete-property-districts" })
+	public Response deleteAllPropertyDistricts() {
+		Response response = new Response();
+		try {
+			response.markSuccessful("Property Districts deleted.");
+			propertyService.deleteAllPropertyDistricts();
+			return response;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return response;
+		}
+	}
 }

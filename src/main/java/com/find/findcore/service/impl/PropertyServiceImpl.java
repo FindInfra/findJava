@@ -13,15 +13,18 @@ import com.find.findcore.model.entity.Property;
 import com.find.findcore.model.entity.PropertyAddress;
 import com.find.findcore.model.entity.PropertyAmenities;
 import com.find.findcore.model.entity.PropertyDesign;
+import com.find.findcore.model.entity.PropertyDistrict;
 import com.find.findcore.model.entity.PropertyNeighborhood;
 import com.find.findcore.model.entity.PropertyViews;
 import com.find.findcore.model.enumeration.EPropertyAmenities;
 import com.find.findcore.model.enumeration.EPropertyDesign;
+import com.find.findcore.model.enumeration.EPropertyDistricts;
 import com.find.findcore.model.enumeration.EPropertyNeighborhood;
 import com.find.findcore.model.enumeration.EPropertyViews;
 import com.find.findcore.repository.PropertyAddressRepository;
 import com.find.findcore.repository.PropertyAmenitiesRepository;
 import com.find.findcore.repository.PropertyDesignRepository;
+import com.find.findcore.repository.PropertyDistrictsRepository;
 import com.find.findcore.repository.PropertyNeighborhoodRepository;
 import com.find.findcore.repository.PropertyRepository;
 import com.find.findcore.repository.PropertyViewsRepository;
@@ -46,6 +49,9 @@ public class PropertyServiceImpl implements PropertyService {
 
 	@Autowired
 	PropertyAddressRepository propertyAddressRepository;
+	
+	@Autowired
+	PropertyDistrictsRepository propertyDistrictsRepository;
 	
 	@Override
 	public Property addProperty(Property property) {
@@ -291,5 +297,40 @@ public class PropertyServiceImpl implements PropertyService {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	@Override
+	public void addPropertyDistricts() {
+		try {
+			List<PropertyDistrict> list = new ArrayList<PropertyDistrict>();
+			for (EPropertyDistricts ePropertyDistricts : EPropertyDistricts.values()) {
+				PropertyDistrict propertyDistricts = new PropertyDistrict();
+				propertyDistricts.setePropertyDistricts(ePropertyDistricts);
+				list.add(propertyDistricts);
+			}
+			propertyDistrictsRepository.saveAll(list);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
+	}
+
+	@Override
+	public List<PropertyDistrict> getPropertyDistricts() {
+		try {
+			return propertyDistrictsRepository.findAll();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public void deleteAllPropertyDistricts() {
+		try {
+			propertyDistrictsRepository.truncateTable();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 }

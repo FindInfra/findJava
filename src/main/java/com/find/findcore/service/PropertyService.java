@@ -7,6 +7,7 @@ import com.find.findcore.model.entity.Property;
 import com.find.findcore.model.entity.PropertyAddress;
 import com.find.findcore.model.entity.PropertyAmenities;
 import com.find.findcore.model.entity.PropertyDesign;
+import com.find.findcore.model.entity.PropertyDistrict;
 import com.find.findcore.model.entity.PropertyNeighborhood;
 import com.find.findcore.model.entity.PropertyViews;
 
@@ -55,5 +56,11 @@ public interface PropertyService {
 	void deletePropertyAddress(PropertyAddress address);
 
 	Map<String, Object> getAllPropertyAdjectives();
+
+	void addPropertyDistricts();
+
+	List<PropertyDistrict> getPropertyDistricts();
+
+	void deleteAllPropertyDistricts();
 
 }

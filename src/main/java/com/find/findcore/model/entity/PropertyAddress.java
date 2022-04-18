@@ -30,7 +30,7 @@ public class PropertyAddress {
 	private String name_of_street;
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinTable(name = "agent_propery_district", joinColumns = @JoinColumn(name = "property_address_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "district_id", referencedColumnName = "id"))
-	private ProperyDistrict propery_district;
+	private PropertyDistrict propery_district;
 
 	public Long getId() {
 		return id;
@@ -80,11 +80,11 @@ public class PropertyAddress {
 		this.name_of_street = name_of_street;
 	}
 
-	public ProperyDistrict getPropery_district() {
+	public PropertyDistrict getPropery_district() {
 		return propery_district;
 	}
 
-	public void setPropery_district(ProperyDistrict propery_district) {
+	public void setPropery_district(PropertyDistrict propery_district) {
 		this.propery_district = propery_district;
 	}
 
