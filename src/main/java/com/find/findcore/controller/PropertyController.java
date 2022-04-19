@@ -47,9 +47,13 @@ public class PropertyController {
 				address = propertyService.addPropertyAddress(address);
 				property.setProperty_address(address);
 				property.setAgent(agent);
-				response.setData(propertyService.addProperty(property));
-				response.markSuccessful("Property Added.");
-			}else
+				property = propertyService.addProperty(property);
+				if (property != null) {
+					response.setData(property);
+					response.markSuccessful("Property Added.");
+				} else
+					response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, "Property not found.");
+			} else
 				response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, "Agent not found.");
 
 		} catch (Exception e) {
