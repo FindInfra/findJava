@@ -326,6 +326,7 @@ public class PropertyServiceImpl implements PropertyService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteAllPropertyDistricts() {
 		try {
 			propertyDistrictsRepository.truncateTable();
