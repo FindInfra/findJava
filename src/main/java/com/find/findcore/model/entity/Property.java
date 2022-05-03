@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
@@ -55,19 +57,19 @@ public class Property {
 	@JoinTable(name = "agent_property_address", joinColumns = @JoinColumn(name = "propery_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "address_id", referencedColumnName = "id"))
 	private PropertyAddress property_address;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "agent_property_views", joinColumns = @JoinColumn(name = "propery_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "views_id", referencedColumnName = "id"))
 	private Set<PropertyViews> property_views;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "agent_property_design", joinColumns = @JoinColumn(name = "propery_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "design_id", referencedColumnName = "id"))
 	private Set<PropertyDesign> property_designs;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "agent_property_neighborhood", joinColumns = @JoinColumn(name = "propery_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "neighborhood_id", referencedColumnName = "id"))
 	private Set<PropertyNeighborhood> property_neighborhoods;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "agent_property_amenities", joinColumns = @JoinColumn(name = "propery_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "amenities_id", referencedColumnName = "id"))
 	private Set<PropertyAmenities> property_amenities;
 
