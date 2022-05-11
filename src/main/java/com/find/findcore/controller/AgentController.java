@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,9 +20,11 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.find.findcore.model.entity.AgencySubscription;
 import com.find.findcore.model.entity.Agent;
 import com.find.findcore.model.entity.AgentProfile;
 import com.find.findcore.model.entity.NeedHelp;
+import com.find.findcore.model.entity.Subscription;
 import com.find.findcore.model.payload.response.Response;
 import com.find.findcore.security.jwt.JwtUtils;
 import com.find.findcore.service.AWSS3Service;
@@ -77,7 +78,6 @@ public class AgentController {
 
 			agent.setPassword(encoder.encode(agentReq.getPassword()));
 			agent.setFullname(agentReq.getFullname());
-			agent.setIsSubscribed(agentReq.getIsSubscribed());
 			agent.setLicenseno(agentReq.getLicenseno());
 			agent.setMobileno(agentReq.getMobileno());
 			agent.setAgency(agentReq.getAgency());
@@ -212,20 +212,52 @@ public class AgentController {
 		}
 	}
 
-	/** need to modify later */
-	@PostMapping({ "/subscribe-agent" })
-	public Response subscribeAgent(@RequestBody Agent agentReq) {
+	@PostMapping({ "/subscribe-agency" })
+	public Response subscribeAgent(@RequestBody Subscription subscription, @RequestHeader("Authorization") String token) {
 		Response response = new Response();
 
 		try {
-			Agent savedAgent = agentService.agentSubscribe(agentReq);
-			response.setData(savedAgent);
-			response.markSuccessful("Agent subscribed!");
+			AgencySubscription agencySubscription = agentService.agentSubscribe(subscription,token);
+			response.setData(agencySubscription);
+			response.markSuccessful("Agency subscribed!");
 			return response;
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR,
-					"Error occurred during password change. Please try again!");
+					"Error occurred during agency subscribtion. Please try again!");
+			return response;
+		}
+	}
+	@GetMapping({ "/agency-subscriptions" })
+	public Response getAgencySubscription(@RequestHeader("Authorization") String token) {
+		Response response = new Response();
+
+		try {
+			AgencySubscription agencySubscription = agentService.getAgencySubscription(token);
+			response.setData(agencySubscription);
+			response.markSuccessful("Agency subscribed!");
+			return response;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error occurred during agency subscribtion. Please try again!");
+			return response;
+		}
+	}
+	
+	@GetMapping({ "/check-agency-subscription" })
+	public Response checkAgencySubscription(@RequestHeader("Authorization") String token) {
+		Response response = new Response();
+
+		try {
+			AgencySubscription agencySubscription = agentService.checkAgencySubscription(token);
+			response.setData(agencySubscription);
+			response.markSuccessful("Agency subscribed!");
+			return response;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error occurred during agency subscribtion. Please try again!");
 			return response;
 		}
 	}

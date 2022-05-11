@@ -2,8 +2,10 @@ package com.find.findcore.service;
 
 import java.util.List;
 
+import com.find.findcore.model.entity.AgencySubscription;
 import com.find.findcore.model.entity.Agent;
 import com.find.findcore.model.entity.AgentProfile;
+import com.find.findcore.model.entity.Subscription;
 
 public interface AgentService {
 
@@ -31,12 +33,16 @@ public interface AgentService {
 
 	AgentProfile getAgentProfileByMobileno(String mobileno);
 
-	Agent agentSubscribe(Agent agent);
+	AgencySubscription agentSubscribe(Subscription subscription, String token);
 
 	void changeAvatar(AgentProfile agentProfile, String mobileno);
 
 	Agent updateProfile(AgentProfile agentProfile, String mobileno);
 
 	AgentProfile saveProfile(AgentProfile agentProfile);
+
+	AgencySubscription getAgencySubscription(String token);
+
+	AgencySubscription checkAgencySubscription(String token);
 
 }

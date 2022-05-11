@@ -1,20 +1,27 @@
 package com.find.findcore.service.impl;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.find.findcore.model.entity.Agency;
+import com.find.findcore.model.entity.AgencySubscription;
 import com.find.findcore.model.entity.Agent;
 import com.find.findcore.model.entity.AgentProfile;
+import com.find.findcore.model.entity.Subscription;
+import com.find.findcore.repository.AgencySubscriptionRepository;
 import com.find.findcore.repository.AgentProfileRepository;
 import com.find.findcore.repository.AgentRepository;
+import com.find.findcore.repository.SubscriptionRepository;
+import com.find.findcore.security.jwt.JwtUtils;
 import com.find.findcore.service.AgentService;
 
 @Service
@@ -26,6 +33,18 @@ public class AgentServiceImpl implements AgentService, UserDetailsService {
 
 	@Autowired
 	AgentProfileRepository agentProfileRepository;
+
+	@Autowired
+	AgencySubscriptionRepository agencySubscriptionRepository;
+
+	@Autowired
+	JwtUtils jwtUtils;
+
+	@Autowired
+	AgentService agentService;
+
+	@Autowired
+	SubscriptionRepository subscriptionRepository;
 
 	@Override
 	public Agent agentSignUp(Agent agent) {
@@ -45,10 +64,55 @@ public class AgentServiceImpl implements AgentService, UserDetailsService {
 	}
 
 	@Override
-	public Agent agentSubscribe(Agent agent) {
-		agent = agentRepository.getById(agent.getId());
-		agent.setSubscribed(true);
-		return agentRepository.save(agent);
+	public AgencySubscription agentSubscribe(Subscription subscription, String token) {
+
+		Calendar cal = Calendar.getInstance();
+
+		String mobileno = jwtUtils.getUserNameFromJwtToken(token);
+		Agent agent = agentService.getAgentByMobile(mobileno);
+
+		Agency agency = agent.getAgency();
+		subscription = subscriptionRepository.getById(subscription.getId());
+
+		AgencySubscription agencySubscription = new AgencySubscription();
+		agencySubscription.setAgency(agency);
+		agencySubscription.setSubscription(subscription);
+		agencySubscription.setSubscription_start_date(new Date());
+		cal.add(Calendar.DATE, +30);
+		agencySubscription.setSubscription_end_date(cal.getTime());
+		agencySubscription.setSubscribed(true);
+
+		return agencySubscriptionRepository.save(agencySubscription);
+	}
+
+	@Override
+	public AgencySubscription getAgencySubscription(String token) {
+
+		String mobileno = jwtUtils.getUserNameFromJwtToken(token);
+		Agent agent = agentService.getAgentByMobile(mobileno);
+
+		Agency agency = agent.getAgency();
+		List<AgencySubscription> agencySubscriptions = agencySubscriptionRepository.findByAgency(agency);
+
+		return agencySubscriptions.get(0);
+	}
+
+	@Override
+	public AgencySubscription checkAgencySubscription(String token) {
+
+		Calendar cal = Calendar.getInstance();
+		String mobileno = jwtUtils.getUserNameFromJwtToken(token);
+		Agent agent = agentService.getAgentByMobile(mobileno);
+
+		Agency agency = agent.getAgency();
+		List<AgencySubscription> agencySubscriptions = agencySubscriptionRepository.findByAgency(agency);
+		AgencySubscription agencySubscription = agencySubscriptions.get(0);
+		if (cal.getTimeInMillis() > agencySubscription.getSubscription_end_date().getTime()) {
+			agencySubscription.setSubscribed(false);
+			agencySubscription = agencySubscriptionRepository.save(agencySubscription);
+			return agencySubscription;
+		} else
+			return agencySubscription;
 	}
 
 	@Override
@@ -117,7 +181,7 @@ public class AgentServiceImpl implements AgentService, UserDetailsService {
 
 	@Override
 	public Agent updateProfile(AgentProfile agentProfile, String mobileno) {
-		
+
 		Agent agent = agentRepository.findByMobileno(mobileno);
 		AgentProfile profile = agent.getProfile();
 
@@ -137,5 +201,4 @@ public class AgentServiceImpl implements AgentService, UserDetailsService {
 	public AgentProfile saveProfile(AgentProfile agentProfile) {
 		return agentProfileRepository.save(agentProfile);
 	}
-
 }

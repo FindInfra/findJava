@@ -13,7 +13,7 @@ public class Subscription {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private long id;
 	@Size(max = 150)
 	private String title_name;
 	@Size(max = 150)
@@ -29,11 +29,11 @@ public class Subscription {
 	private String per_listing_amount;
 	private boolean enable = false;
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

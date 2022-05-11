@@ -3,6 +3,7 @@ package com.find.findcore.service;
 import java.util.List;
 import java.util.Map;
 
+import com.find.findcore.model.dao.ActivePastPropertiesWrapper;
 import com.find.findcore.model.entity.Property;
 import com.find.findcore.model.entity.PropertyAddress;
 import com.find.findcore.model.entity.PropertyAmenities;
@@ -13,7 +14,7 @@ import com.find.findcore.model.entity.PropertyViews;
 
 public interface PropertyService {
 
-	Property addProperty(Property property);
+	Property addProperty(Property property, String token);
 
 	Property getPropertyById(Property property);
 
@@ -48,7 +49,7 @@ public interface PropertyService {
 	void deleteAllPropertyAmenities();
 
 	List<PropertyAmenities> getPropertyAmenities();
-	
+
 	PropertyAddress addPropertyAddress(PropertyAddress address);
 
 	List<PropertyAddress> getPropertyAddress();
@@ -62,5 +63,7 @@ public interface PropertyService {
 	List<PropertyDistrict> getPropertyDistricts();
 
 	void deleteAllPropertyDistricts();
+
+	ActivePastPropertiesWrapper getAllActivePropertiesOfAgent(String token);
 
 }

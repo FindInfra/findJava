@@ -12,12 +12,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.find.findcore.model.entity.Agent;
+import com.find.findcore.model.dao.ActivePastPropertiesWrapper;
 import com.find.findcore.model.entity.Property;
-import com.find.findcore.model.entity.PropertyAddress;
 import com.find.findcore.model.payload.response.Response;
-import com.find.findcore.security.jwt.JwtUtils;
-import com.find.findcore.service.AgentService;
 import com.find.findcore.service.PropertyService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -28,34 +25,17 @@ public class PropertyController {
 
 	@Autowired
 	PropertyService propertyService;
-	
-	@Autowired
-	AgentService agentService;
-	
-	@Autowired
-	JwtUtils jwtUtils;
 
 	@PostMapping({ "/add-property" })
 	public Response addProperty(@RequestBody Property property, @RequestHeader("Authorization") String token) {
 		Response response = new Response();
 		try {
-
-			String mobileno = jwtUtils.getUserNameFromJwtToken(token);
-			Agent agent = agentService.getAgentByMobile(mobileno);
-			if (agent != null) {
-				PropertyAddress address = property.getProperty_address();
-				address = propertyService.addPropertyAddress(address);
-				property.setProperty_address(address);
-				property.setAgent(agent);
-				property = propertyService.addProperty(property);
-				if (property != null) {
-					response.setData(property);
-					response.markSuccessful("Property Added.");
-				} else
-					response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, "Property not found.");
+			property = propertyService.addProperty(property, token);
+			if (property != null) {
+				response.setData(property);
+				response.markSuccessful("Property Added.");
 			} else
-				response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, "Agent not found.");
-
+				response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, "Property not added.");
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
@@ -90,6 +70,28 @@ public class PropertyController {
 		try {
 			response.markSuccessful("Properties Fetched.");
 			response.setData(propertyService.getProperties());
+			return response;
+
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return response;
+		}
+	} 
+
+	@GetMapping({ "/active-properties" })
+	public Response getAllActivePropertiesOfAgent(@RequestHeader("Authorization") String token) {
+		Response response = new Response();
+		try {
+
+			ActivePastPropertiesWrapper activePastPropertiesWrapper  = propertyService.getAllActivePropertiesOfAgent(token);
+			if (activePastPropertiesWrapper.getActiveProperties() != null) {
+				response.setData(activePastPropertiesWrapper);
+				response.markSuccessful("Active Properties Fetched.");
+			} else {
+				response.setData(activePastPropertiesWrapper);
+				response.markSuccessful("Past Properties Found.");
+			}
 			return response;
 
 		} catch (Exception e) {
@@ -187,7 +189,7 @@ public class PropertyController {
 			return response;
 		}
 	}
-	
+
 	@PostMapping({ "/add-property-design" })
 	public Response addPropertyDesign() {
 		Response response = new Response();
@@ -275,7 +277,7 @@ public class PropertyController {
 			return response;
 		}
 	}
-	
+
 	@PostMapping({ "/add-property-amenities" })
 	public Response addPropertyAmenities() {
 		Response response = new Response();
@@ -319,7 +321,7 @@ public class PropertyController {
 			return response;
 		}
 	}
-	
+
 	@GetMapping({ "/property-adjectives" })
 	public Response getAllPropertyAdjectives() {
 		Response response = new Response();
@@ -333,7 +335,7 @@ public class PropertyController {
 			return response;
 		}
 	}
-	
+
 	@PostMapping({ "/add-property-districts" })
 	public Response addPropertyDistricts() {
 		Response response = new Response();

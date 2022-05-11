@@ -1,5 +1,6 @@
 package com.find.findcore.model.entity;
 
+import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -11,17 +12,17 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "property")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Property {
 
 	@Id
@@ -48,6 +49,8 @@ public class Property {
 	private String price;
 	@Size(max = 50)
 	private String landlord_rating;
+	@CreationTimestamp
+	private Date created_date;
 
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinTable(name = "agent_property", joinColumns = @JoinColumn(name = "propery_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "agent_id", referencedColumnName = "id"))
@@ -224,4 +227,13 @@ public class Property {
 	public void setProperty_amenities(Set<PropertyAmenities> property_amenities) {
 		this.property_amenities = property_amenities;
 	}
+
+	public Date getCreated_date() {
+		return created_date;
+	}
+
+	public void setCreated_date(Date created_date) {
+		this.created_date = created_date;
+	}
+
 }

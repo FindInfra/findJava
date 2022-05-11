@@ -1,6 +1,7 @@
 package com.find.findcore.service.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.find.findcore.model.dao.ActivePastPropertiesWrapper;
+import com.find.findcore.model.dao.ActivePastProperty;
+import com.find.findcore.model.entity.AgencySubscription;
+import com.find.findcore.model.entity.Agent;
 import com.find.findcore.model.entity.Property;
 import com.find.findcore.model.entity.PropertyAddress;
 import com.find.findcore.model.entity.PropertyAmenities;
@@ -28,6 +33,8 @@ import com.find.findcore.repository.PropertyDistrictsRepository;
 import com.find.findcore.repository.PropertyNeighborhoodRepository;
 import com.find.findcore.repository.PropertyRepository;
 import com.find.findcore.repository.PropertyViewsRepository;
+import com.find.findcore.security.jwt.JwtUtils;
+import com.find.findcore.service.AgentService;
 import com.find.findcore.service.PropertyService;
 
 @Service
@@ -49,18 +56,33 @@ public class PropertyServiceImpl implements PropertyService {
 
 	@Autowired
 	PropertyAddressRepository propertyAddressRepository;
-	
+
 	@Autowired
 	PropertyDistrictsRepository propertyDistrictsRepository;
-	
+
+	@Autowired
+	JwtUtils jwtUtils;
+
+	@Autowired
+	AgentService agentService;
+
 	@Override
-	public Property addProperty(Property property) {
+	public Property addProperty(Property property, String token) {
 		try {
-			return propertyRepository.save(property);
+
+			String mobileno = jwtUtils.getUserNameFromJwtToken(token);
+			Agent agent = agentService.getAgentByMobile(mobileno);
+			if (agent != null) {
+				PropertyAddress address = property.getProperty_address();
+				address = addPropertyAddress(address);
+				property.setProperty_address(address);
+				property.setAgent(agent);
+				return propertyRepository.save(property);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
 		}
+		return null;
 	}
 
 	@Override
@@ -81,6 +103,44 @@ public class PropertyServiceImpl implements PropertyService {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	@Override
+	public ActivePastPropertiesWrapper getAllActivePropertiesOfAgent(String token) {
+		try {
+			ActivePastPropertiesWrapper activePastPropertiesWrapper = new ActivePastPropertiesWrapper();
+			List<ActivePastProperty> activeProperties = new ArrayList<ActivePastProperty>();
+			AgencySubscription agencySubscription = agentService.checkAgencySubscription(token);
+			String mobileno = jwtUtils.getUserNameFromJwtToken(token);
+			Agent agent = agentService.getAgentByMobile(mobileno);
+			List<Property> properties = propertyRepository.findByAgent(agent);
+			for (Property property : properties) {
+				ActivePastProperty activePastProperty = new ActivePastProperty();
+				activePastProperty.setStar_rating("1.2");
+				activePastProperty.setViews("1.3");
+				activePastProperty.setProperty(property);
+				activeProperties.add(activePastProperty);
+			}
+			activePastPropertiesWrapper.setAvialable_listing(Integer.toString(30 - activeProperties.size()));
+
+			if (agencySubscription.isSubscribed()) {
+
+				activePastPropertiesWrapper.setActiveProperties(activeProperties);
+				activePastPropertiesWrapper.setPastProperties(new ArrayList<ActivePastProperty>());
+				activePastPropertiesWrapper
+						.setSubs_days(Long.toString((agencySubscription.getSubscription_end_date().getTime()
+								- Calendar.getInstance().getTimeInMillis()) / (1000 * 60 * 60 * 24)));
+				return activePastPropertiesWrapper;
+			} else {
+				activePastPropertiesWrapper.setActiveProperties(new ArrayList<ActivePastProperty>());
+				activePastPropertiesWrapper.setPastProperties(activeProperties);
+				activePastPropertiesWrapper.setSubs_days("0");
+				return activePastPropertiesWrapper;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override
@@ -283,16 +343,16 @@ public class PropertyServiceImpl implements PropertyService {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
-	public Map<String,Object> getAllPropertyAdjectives() {
-		Map<String,Object> objects = new HashMap<String, Object>();
+	public Map<String, Object> getAllPropertyAdjectives() {
+		Map<String, Object> objects = new HashMap<String, Object>();
 		try {
-			objects.put("Design",propertyDesignRepository.findAll());
-			objects.put("Neighborhood",propertyNeighborhoodRepository.findAll());
-			objects.put("Views",propertyViewsRepository.findAll());
-			objects.put("Amenities",propertyAmenitiesRepository.findAll());
-			objects.put("Districts",propertyDistrictsRepository.findAll());
+			objects.put("Design", propertyDesignRepository.findAll());
+			objects.put("Neighborhood", propertyNeighborhoodRepository.findAll());
+			objects.put("Views", propertyViewsRepository.findAll());
+			objects.put("Amenities", propertyAmenitiesRepository.findAll());
+			objects.put("Districts", propertyDistrictsRepository.findAll());
 			return objects;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -312,7 +372,7 @@ public class PropertyServiceImpl implements PropertyService {
 			propertyDistrictsRepository.saveAll(list);
 		} catch (Exception e) {
 			e.printStackTrace();
-		}		
+		}
 	}
 
 	@Override
@@ -333,6 +393,7 @@ public class PropertyServiceImpl implements PropertyService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
+
 }
