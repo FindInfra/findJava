@@ -1,5 +1,7 @@
 package com.find.findcore.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,5 +19,7 @@ public interface AgentRepository extends JpaRepository<Agent, Long> {
 	public Agent findByMobileno(String mobileno);
 
 	public Agent getByIdAndAndIsEnabled(Long id, boolean isEnable);
+
+	public List<Agent> findAllByMobilenoIn(List<String> ids);
 
 }

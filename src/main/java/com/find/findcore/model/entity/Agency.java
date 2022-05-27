@@ -17,6 +17,8 @@ public class Agency {
 	private String licenseno;
 	private String website;
 
+	public Agency() {}
+
 	public Long getId() {
 		return id;
 	}

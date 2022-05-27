@@ -22,6 +22,8 @@ public class NeedHelp {
 	private String subject;
 	@Size(max = 3500)
 	private String message;
+	
+	public NeedHelp() {}
 
 	public Long getId() {
 		return id;

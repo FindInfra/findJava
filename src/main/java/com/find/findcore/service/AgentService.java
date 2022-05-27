@@ -2,6 +2,7 @@ package com.find.findcore.service;
 
 import java.util.List;
 
+import com.find.findcore.model.dao.AgentWithDetails;
 import com.find.findcore.model.entity.AgencySubscription;
 import com.find.findcore.model.entity.Agent;
 import com.find.findcore.model.entity.AgentProfile;
@@ -44,5 +45,11 @@ public interface AgentService {
 	AgencySubscription getAgencySubscription(String token);
 
 	AgencySubscription checkAgencySubscription(String token);
+
+	List<AgentWithDetails> getAgentConnections(String token);
+
+	void addAgentConnection(String mob, String token);
+
+	boolean checkAgentConnection(String mob, String token);
 
 }

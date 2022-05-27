@@ -18,8 +18,13 @@ import java.util.List;
 public class StaticController {
 	private static final Logger log = LoggerFactory.getLogger(StaticController.class);
 
-	@GetMapping({ "/home" })
+	@GetMapping({ "/" })
 	public String getHealth() {
+		return "Let us help you FIND your dream home!";
+	}
+
+	@GetMapping({ "/home" })
+	public String getHome() {
 		return "Let us help you FIND your dream home!";
 	}
 
@@ -63,39 +68,39 @@ public class StaticController {
 	@GetMapping(value = "/profileAvatar")
 	public List<String> getProfileAvatarImages() {
 		List<String> profAvtr = new ArrayList<>();
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/default.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/bald.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/beanie-2_a.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/beanie_a.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/beard_black.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/curly-hair-2-copy.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/curly-hair-3-copy.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/fringe-copy.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/glasses_a.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/glasses-2_a.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/goatee_grey.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/Grey_glasses.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/Grey.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/happy-2_a.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/happy_a.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/happy_brown.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/happy-face_a.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/happy-face-2-copy.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/headband_a.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/long-hair_a2.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/long-hair-2_a.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/long-hair-3_a.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/long-hair-4_a.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/long-hair-5_a.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/model_a.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/model-2_a.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/model-3-copy_boy.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/model-3-copy.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/model-4_a.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/pink.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/ponytail-2_a.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/ponytail_a.png");
-		profAvtr.add("https://find-image-video.s3.us-east-2.amazonaws.com/avatars/short-hair_a.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/default.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/bald.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/beanie-2_a.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/beanie_a.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/beard_black.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/curly-hair-2-copy.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/curly-hair-3-copy.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/fringe-copy.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/glasses_a.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/glasses-2_a.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/goatee_grey.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/Grey_glasses.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/Grey.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/happy-2_a.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/happy_a.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/happy_brown.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/happy-face_a.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/happy-face-2-copy.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/headband_a.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/long-hair_a2.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/long-hair-2_a.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/long-hair-3_a.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/long-hair-4_a.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/long-hair-5_a.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/model_a.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/model-2_a.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/model-3-copy_boy.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/model-3-copy.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/model-4_a.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/pink.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/ponytail-2_a.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/ponytail_a.png");
+		profAvtr.add("https://findavatarimages.s3.ap-east-1.amazonaws.com/short-hair_a.png");
 		return profAvtr;
 	}
 }

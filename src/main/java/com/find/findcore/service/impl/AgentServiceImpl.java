@@ -1,8 +1,11 @@
 package com.find.findcore.service.impl;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,12 +15,15 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.find.findcore.model.dao.AgentWithDetails;
 import com.find.findcore.model.entity.Agency;
 import com.find.findcore.model.entity.AgencySubscription;
 import com.find.findcore.model.entity.Agent;
+import com.find.findcore.model.entity.AgentConnection;
 import com.find.findcore.model.entity.AgentProfile;
 import com.find.findcore.model.entity.Subscription;
 import com.find.findcore.repository.AgencySubscriptionRepository;
+import com.find.findcore.repository.AgentConnectionRepository;
 import com.find.findcore.repository.AgentProfileRepository;
 import com.find.findcore.repository.AgentRepository;
 import com.find.findcore.repository.SubscriptionRepository;
@@ -45,6 +51,9 @@ public class AgentServiceImpl implements AgentService, UserDetailsService {
 
 	@Autowired
 	SubscriptionRepository subscriptionRepository;
+
+	@Autowired
+	AgentConnectionRepository agentConnectionRepository;
 
 	@Override
 	public Agent agentSignUp(Agent agent) {
@@ -200,5 +209,56 @@ public class AgentServiceImpl implements AgentService, UserDetailsService {
 	@Override
 	public AgentProfile saveProfile(AgentProfile agentProfile) {
 		return agentProfileRepository.save(agentProfile);
+	}
+
+	@Override
+	public List<AgentWithDetails> getAgentConnections(String token) {
+
+		List<AgentWithDetails> agentWithDetailss = new ArrayList<AgentWithDetails>();
+		String agentmob = jwtUtils.getUserNameFromJwtToken(token);
+
+		AgentConnection agentConnection = agentConnectionRepository.findByAgentMob(agentmob);
+		String list[] = agentConnection.getConnectionMob().split(",");
+
+		if (list.length > 0) {
+			List<String> ids = Stream.of(list).map(String::valueOf).collect(Collectors.toList());
+			List<Agent> agents = agentRepository.findAllByMobilenoIn(ids);
+			for (Agent agent : agents) {
+				AgentWithDetails agentWithDetails = new AgentWithDetails();
+				agentWithDetails.setAgent(agent);
+				agentWithDetails.setViews("1.3");
+				agentWithDetails.setRating("1.2");
+				agentWithDetails.setPropertylisted("10");
+				agentWithDetailss.add(agentWithDetails);
+			}
+		}
+		return agentWithDetailss;
+	}
+
+	@Override
+	public void addAgentConnection(String mob, String agentmob) {
+
+		AgentConnection agentConnection = agentConnectionRepository.findByAgentMob(agentmob);
+		if (agentConnection == null) {
+			agentConnection = new AgentConnection();
+			agentConnection.setConnectionMob(mob);
+		} else if (agentConnection.getConnectionMob().isEmpty()) {
+			agentConnection.setConnectionMob(mob);
+		} else {
+			mob = agentConnection.getConnectionMob() + "," + mob;
+			agentConnection.setConnectionMob(mob);
+		}
+		agentConnection.setAgentMob(agentmob);
+		agentConnectionRepository.save(agentConnection);
+	}
+
+	@Override
+	public boolean checkAgentConnection(String mob, String agentmob) {
+
+		AgentConnection agentConnection = agentConnectionRepository.findByAgentMob(agentmob);
+		if (agentConnection != null && agentConnection.getConnectionMob().contains(mob))
+			return false;
+		else
+			return true;
 	}
 }

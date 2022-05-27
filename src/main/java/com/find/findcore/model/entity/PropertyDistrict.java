@@ -23,6 +23,9 @@ public class PropertyDistrict {
 	@Column(length = 50)
 	private EPropertyDistricts ePropertyDistricts;
 
+	public PropertyDistrict() {
+	}
+
 	public Long getId() {
 		return id;
 	}

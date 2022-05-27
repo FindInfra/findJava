@@ -29,6 +29,26 @@ public class Subscription {
 	private String per_listing_amount;
 	private boolean enable = false;
 
+	public Subscription() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Subscription(long id, @Size(max = 150) String title_name, @Size(max = 150) String title_description,
+			String subs_description, @Size(max = 150) String description_heading, @Size(max = 150) String no_of_listing,
+			@Size(max = 150) String amount, @Size(max = 150) String per_listing_amount, boolean enable) {
+		super();
+		this.id = id;
+		this.title_name = title_name;
+		this.title_description = title_description;
+		this.subs_description = subs_description;
+		this.description_heading = description_heading;
+		this.no_of_listing = no_of_listing;
+		this.amount = amount;
+		this.per_listing_amount = per_listing_amount;
+		this.enable = enable;
+	}
+
 	public long getId() {
 		return id;
 	}

@@ -33,6 +33,8 @@ public class AgencySubscription {
 	@JoinTable(name = "subscribed_subscription_plan", joinColumns = @JoinColumn(name = "agency_subscription_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "subscription_id", referencedColumnName = "id"))
 	private Subscription subscription;
 
+	public AgencySubscription() {}
+	
 	public Long getId() {
 		return id;
 	}

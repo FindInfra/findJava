@@ -76,6 +76,8 @@ public class Property {
 	@JoinTable(name = "agent_property_amenities", joinColumns = @JoinColumn(name = "propery_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "amenities_id", referencedColumnName = "id"))
 	private Set<PropertyAmenities> property_amenities;
 
+	public Property() {}
+	
 	public Long getId() {
 		return id;
 	}

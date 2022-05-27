@@ -34,6 +34,8 @@ public class Agent {
 	@JoinTable(name = "agent_profiles", joinColumns = @JoinColumn(name = "agent_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "profile_id", referencedColumnName = "id"))
 	private AgentProfile profile;
 
+	public Agent() {}
+	
 	public String getFullname() {
 		return fullname;
 	}

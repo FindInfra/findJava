@@ -32,6 +32,8 @@ public class PropertyAddress {
 	@JoinTable(name = "agent_propery_district", joinColumns = @JoinColumn(name = "property_address_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "district_id", referencedColumnName = "id"))
 	private PropertyDistrict propery_district;
 
+	public PropertyAddress() {}
+
 	public Long getId() {
 		return id;
 	}

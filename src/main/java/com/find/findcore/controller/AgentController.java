@@ -1,11 +1,15 @@
 package com.find.findcore.controller;
 
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -61,13 +66,16 @@ public class AgentController {
 	JwtUtils jwtUtils;
 
 	@Autowired
-	AWSS3Service awss3Service; 
-	
+	AWSS3Service awss3Service;
+
+	@Autowired
+	JavaMailSender mailSender;
+
 	@PostMapping({ "/agent-signup" })
 	public Response registerAgent(@Valid @RequestBody Agent agentReq) {
 		Response response = new Response();
 		Agent agent = new Agent();
-		
+
 		try {
 			if (agentService.enableAgentExists(agentReq.getMobileno())) {
 				response.markFailed(HttpStatus.BAD_REQUEST, "Mobile no. is already taken!");
@@ -81,12 +89,12 @@ public class AgentController {
 			agent.setLicenseno(agentReq.getLicenseno());
 			agent.setMobileno(agentReq.getMobileno());
 			agent.setAgency(agentReq.getAgency());
-			
+
 			AgentProfile agentProfile = new AgentProfile();
 			agentProfile.setMobileno(agentReq.getMobileno());
 			agentProfile.setFullName(agentReq.getFullname());
 			agentProfile.setLicenseno(agentReq.getLicenseno());
-			
+
 			agentProfile = agentService.saveProfile(agentProfile);
 			agent.setProfile(agentProfile);
 			log.info(agent.toString());
@@ -213,11 +221,12 @@ public class AgentController {
 	}
 
 	@PostMapping({ "/subscribe-agency" })
-	public Response subscribeAgent(@RequestBody Subscription subscription, @RequestHeader("Authorization") String token) {
+	public Response subscribeAgent(@RequestBody Subscription subscription,
+			@RequestHeader("Authorization") String token) {
 		Response response = new Response();
 
 		try {
-			AgencySubscription agencySubscription = agentService.agentSubscribe(subscription,token);
+			AgencySubscription agencySubscription = agentService.agentSubscribe(subscription, token);
 			response.setData(agencySubscription);
 			response.markSuccessful("Agency subscribed!");
 			return response;
@@ -228,6 +237,7 @@ public class AgentController {
 			return response;
 		}
 	}
+
 	@GetMapping({ "/agency-subscriptions" })
 	public Response getAgencySubscription(@RequestHeader("Authorization") String token) {
 		Response response = new Response();
@@ -244,7 +254,7 @@ public class AgentController {
 			return response;
 		}
 	}
-	
+
 	@GetMapping({ "/check-agency-subscription" })
 	public Response checkAgencySubscription(@RequestHeader("Authorization") String token) {
 		Response response = new Response();
@@ -262,11 +272,47 @@ public class AgentController {
 		}
 	}
 
+	@PostMapping({ "/add-agent-connection" })
+	public Response addAgentConnection(@RequestHeader("Authorization") String token,
+			@RequestParam(name = "mob") String mob) {
+		Response response = new Response();
+		try {
+			String agentmob = jwtUtils.getUserNameFromJwtToken(token);
+			if (agentmob.equalsIgnoreCase(mob)) {
+				response.markSuccessful("Please enter other agent mobile no!");
+			} else if (agentService.checkAgentConnection(mob, agentmob)) {
+				response.markSuccessful("Agent Connection added!");
+				agentService.addAgentConnection(mob, agentmob);
+			} else {
+				response.markSuccessful("Agent is already in your network.");
+			}
+			return response;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return response;
+		}
+	}
+
+	@GetMapping({ "/agent-connections" })
+	public Response getAgentConnections(@RequestHeader("Authorization") String token) {
+		Response response = new Response();
+		try {
+			response.markSuccessful("Agent Connections Fetched");
+			response.setData(agentService.getAgentConnections(token));
+			return response;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return response;
+		}
+	}
+
 	@GetMapping({ "/agents" })
 	public Response getAllAgents() {
 		Response response = new Response();
 		try {
-			response.markSuccessful("Agency Fetched.");
+			response.markSuccessful("Agent Fetched.");
 			response.setData(agentService.getAllAgents());
 			return response;
 		} catch (Exception e) {
@@ -309,8 +355,6 @@ public class AgentController {
 			return response;
 		}
 	}
-	
-	
 
 	@PostMapping({ "/change-avatar" })
 	public Response updateAvatar(@RequestHeader("Authorization") String token, @RequestBody AgentProfile agentProfile) {
@@ -329,19 +373,37 @@ public class AgentController {
 		}
 
 	}
-	
-	@PostMapping("/update-profile")
-	public Response updateProfile(@RequestHeader("Authorization") String token, @RequestBody AgentProfile agentProfile,
-			@RequestPart(value= "file") MultipartFile agentVideo) {
-		Response response = new Response();
 
+	@PostMapping("/upload-image-video")
+	public Response uploadProfileImage(@RequestHeader("Authorization") String token,
+			@RequestPart(value = "file") MultipartFile agentVideo) {
+		Response response = new Response();
+		String url = "https://findimagevideo.s3.ap-southeast-1.amazonaws.com/";
+		String finalUrl = "";
 		try {
 			try {
-				log.info("[" + agentVideo.getOriginalFilename() + "] uploaded successfully.");
-				awss3Service.uploadFile(agentVideo);
+				log.info("[" + url + agentVideo.getOriginalFilename() + "] uploaded successfully.");
+				String fileName = awss3Service.uploadFile(agentVideo);
+				finalUrl = url + fileName;
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
+			response.setData(finalUrl);
+			response.markSuccessful("Profile Updated!");
+
+			return response;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, "Please try again!" + e.getMessage());
+			return response;
+		}
+	}
+
+	@PostMapping("/update-profile")
+	public Response updateProfile(@RequestHeader("Authorization") String token,@RequestBody AgentProfile agentProfile) {
+		Response response = new Response();
+
+		try {
 			String mobileno = jwtUtils.getUserNameFromJwtToken(token);
 			Agent agent = agentService.updateProfile(agentProfile, mobileno);
 
@@ -355,7 +417,6 @@ public class AgentController {
 			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, "Please try again!");
 			return response;
 		}
-
 	}
 
 	@PostMapping({ "/need-help" })
@@ -366,8 +427,18 @@ public class AgentController {
 			needHelpService.addHelpRequest(helpReq);
 			response.markSuccessful("Request Taken!");
 
+			MimeMessage mimeMessage = mailSender.createMimeMessage();
+			MimeMessageHelper mailMessage = new MimeMessageHelper(mimeMessage, "utf-8");
+			mailMessage.setTo(helpReq.getEmailaddress());
+			mailMessage.setSubject("Thank you for contacting Find");
+			mailMessage.setFrom(new InternetAddress("infrafind@gmail.com", "FIND"));
+			mailMessage.setText(
+					"We have received your request and is under process. We will get back to you within 48 hours. For any immediate help, please feel free to contact us at +852 12345678.",
+					true);
+			mailSender.send(mimeMessage);
 			return response;
 		} catch (Exception e) {
+			e.printStackTrace();
 			log.error(e.getMessage());
 			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, "Please try again!");
 			return response;
