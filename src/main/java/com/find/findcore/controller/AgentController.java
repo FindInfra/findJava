@@ -43,6 +43,7 @@ import com.find.findcore.service.impl.RefreshTokenServiceImpl;
 @RequestMapping("/api/find")
 public class AgentController {
 	private static final Logger log = LoggerFactory.getLogger(AgentController.class);
+	private final static String AGENT_VIDEO_FOLDER = "/agent-profile-video";
 
 	@Autowired
 	AgentService agentService;
@@ -378,19 +379,12 @@ public class AgentController {
 	public Response uploadProfileImage(@RequestHeader("Authorization") String token,
 			@RequestPart(value = "file") MultipartFile agentVideo) {
 		Response response = new Response();
-		String url = "https://findimagevideo.s3.ap-southeast-1.amazonaws.com/";
-		String finalUrl = "";
-		try {
-			try {
-				log.info("[" + url + agentVideo.getOriginalFilename() + "] uploaded successfully.");
-				String fileName = awss3Service.uploadFile(agentVideo);
-				finalUrl = url + fileName;
-			} catch (Exception e) {
-				log.error(e.getMessage());
-			}
-			response.setData(finalUrl);
-			response.markSuccessful("Profile Updated!");
 
+		try {
+			String finalUrl = awss3Service.uploadFile(agentVideo, AGENT_VIDEO_FOLDER);
+			log.info("[" + finalUrl + "] uploaded successfully.");
+			response.setData(finalUrl);
+			response.markSuccessful("File uploaded successfully.!");
 			return response;
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -400,7 +394,8 @@ public class AgentController {
 	}
 
 	@PostMapping("/update-profile")
-	public Response updateProfile(@RequestHeader("Authorization") String token,@RequestBody AgentProfile agentProfile) {
+	public Response updateProfile(@RequestHeader("Authorization") String token,
+			@RequestBody AgentProfile agentProfile) {
 		Response response = new Response();
 
 		try {

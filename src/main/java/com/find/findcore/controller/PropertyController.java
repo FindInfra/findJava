@@ -1,5 +1,7 @@
 package com.find.findcore.controller;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +12,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.find.findcore.model.dao.ActivePastPropertiesWrapper;
 import com.find.findcore.model.entity.Property;
 import com.find.findcore.model.payload.response.Response;
+import com.find.findcore.service.AWSS3Service;
 import com.find.findcore.service.PropertyService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -22,9 +28,13 @@ import com.find.findcore.service.PropertyService;
 @RequestMapping("/api/find")
 public class PropertyController {
 	private static final Logger log = LoggerFactory.getLogger(PropertyController.class);
+	private final static String PROPERTY_IMAGES_VIDEOS_FOLDER = "/property-videos-images";
 
 	@Autowired
 	PropertyService propertyService;
+
+	@Autowired
+	AWSS3Service awss3Service;
 
 	@PostMapping({ "/add-property" })
 	public Response addProperty(@RequestBody Property property, @RequestHeader("Authorization") String token) {
@@ -77,14 +87,15 @@ public class PropertyController {
 			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 			return response;
 		}
-	} 
+	}
 
 	@GetMapping({ "/active-properties" })
 	public Response getAllActivePropertiesOfAgent(@RequestHeader("Authorization") String token) {
 		Response response = new Response();
 		try {
 
-			ActivePastPropertiesWrapper activePastPropertiesWrapper  = propertyService.getAllActivePropertiesOfAgent(token);
+			ActivePastPropertiesWrapper activePastPropertiesWrapper = propertyService
+					.getAllActivePropertiesOfAgent(token);
 			if (activePastPropertiesWrapper.getActiveProperties() != null) {
 				response.setData(activePastPropertiesWrapper);
 				response.markSuccessful("Active Properties Fetched.");
@@ -144,6 +155,40 @@ public class PropertyController {
 			return response;
 		}
 		return response;
+	}
+
+	@PostMapping({ "/upload-images", "/upload-videos" })
+	public Response uploadImagesVideos(@RequestHeader("Authorization") String token,
+			@RequestPart(value = "files") MultipartFile[] files) {
+		Response response = new Response();
+		try {
+			List<String> fileNames = awss3Service.uploadFiles(files, PROPERTY_IMAGES_VIDEOS_FOLDER);
+			response.setData(fileNames);
+			response.markSuccessful("Uploaded the files successfully!");
+			log.info("Uploaded the files successfully: " + fileNames);
+			return response;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, "Please try again!" + e.getMessage());
+			return response;
+		}
+	}
+
+	@PostMapping("/delete-file")
+	public Response deleteImagesVideos(@RequestHeader("Authorization") String token,
+			@RequestParam("filename") String filename) {
+		Response response = new Response();
+		try {
+			String fileName = awss3Service.deleteFile(filename, PROPERTY_IMAGES_VIDEOS_FOLDER);
+			response.setData(fileName);
+			response.markSuccessful("Deleted the file successfully!");
+			log.info("Deleted the file successfully: " + fileName);
+			return response;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			response.markFailed(HttpStatus.INTERNAL_SERVER_ERROR, "Please try again!" + e.getMessage());
+			return response;
+		}
 	}
 
 	@PostMapping({ "/add-property-views" })
